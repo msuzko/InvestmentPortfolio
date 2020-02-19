@@ -1,4 +1,4 @@
-package sample;
+package com.mec.ip;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -10,9 +10,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        Parent root = FXMLLoader.load(getClass().getResource("resource/main.fxml"));
+        primaryStage.setTitle("Investment portfolio");
+        primaryStage.setMinWidth(750);
+        primaryStage.setMinHeight(300);
+        primaryStage.setScene(new Scene(root, 750, 400));
         primaryStage.show();
     }
 
