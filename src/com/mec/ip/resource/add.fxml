@@ -14,7 +14,7 @@
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                     </HBox.margin>
                 </ChoiceBox>
-                <TextField fx:id="tikerTxt" promptText="Тикер">
+                <TextField fx:id="tickerTxt" promptText="Тикер">
                     <HBox.margin>
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                     </HBox.margin>
@@ -38,7 +38,7 @@
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                     </HBox.margin>
                 </TextField>
-                <TextField fx:id="comissionTxt" promptText="Комиссия">
+                <TextField fx:id="commissionTxt" promptText="Комиссия">
                     <HBox.margin>
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                     </HBox.margin>
@@ -47,8 +47,8 @@
         </HBox>
         <AnchorPane>
             <children>
-                <Button layoutX="358.0" layoutY="5.0" mnemonicParsing="false" text="Добавить" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="5.0" />
-                <Button cancelButton="true" layoutX="445.0" layoutY="14.0" mnemonicParsing="false" text="Отмена" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
+                <Button fx:id="btnOk" defaultButton="true" layoutX="358.0" layoutY="5.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="65.0" text="ОК" AnchorPane.rightAnchor="82.0" AnchorPane.topAnchor="5.0" />
+                <Button fx:id="btnCancel" cancelButton="true" layoutX="445.0" layoutY="14.0" mnemonicParsing="false" onAction="#actionClose" prefWidth="65.0" text="Отмена" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
             </children>
         </AnchorPane>
     </children>

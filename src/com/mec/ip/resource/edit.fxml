@@ -2,7 +2,6 @@
 
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -25,8 +24,8 @@
         </TableView>
         <AnchorPane>
             <children>
-                <Button mnemonicParsing="false" text="Изменить" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="5.0" />
-                <Button cancelButton="true" mnemonicParsing="false" text="Отмена" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                <Button defaultButton="true" mnemonicParsing="false" text="Изменить" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="5.0" />
+                <Button fx:id="btnCancel" cancelButton="true" layoutX="445.0" layoutY="14.0" mnemonicParsing="false" onAction="#actionClose" prefWidth="65.0" text="Отмена" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
             </children>
         </AnchorPane>
     </children>

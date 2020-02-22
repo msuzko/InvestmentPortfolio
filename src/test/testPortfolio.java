@@ -1,7 +1,6 @@
 package test;
 
-import com.mec.ip.interfaces.Portfolio;
-import com.mec.ip.interfaces.implsPortfolio.CollectionPortfolio;
+import com.mec.ip.interfaces.impls.CollectionPortfolio;
 import com.mec.ip.objects.Stock;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,46 +11,45 @@ import java.util.Calendar;
 public class testPortfolio {
 
     CollectionPortfolio portfolio;
-    Stock stock1, stock2;
 
     @Before
     public void init() {
         portfolio = new CollectionPortfolio();
 
-        stock1 = getNewStock();
-        stock2 = getNewStock();
-
-        portfolio.add(stock1);
-        portfolio.add(stock2);
-
+        portfolio.fillTestData();
     }
 
     private Stock getNewStock() {
         Stock stock = new Stock();
-        stock.setDate(Calendar.getInstance());
-        stock.setTiker("MU");
+        stock.setDate(Calendar.getInstance().getTime());
+        stock.setTicker("MU");
         stock.setCount(3);
         stock.setCost(58);
-        stock.setCommission(0.3);
+        stock.setCommission(0.3f);
         return stock;
     }
 
     @Test
     public void testAdd() {
         portfolio.add(getNewStock());
-        Assert.assertEquals(3, portfolio.getStockList().size());
+        Assert.assertEquals(8, portfolio.getStockList().size());
     }
 
     @Test
     public void testUpdate() {
-        portfolio.update(stock2);
-        Assert.assertEquals(2, portfolio.getStockList().size());
+        portfolio.update(portfolio.getStockList().get(0));
+        Assert.assertEquals(7, portfolio.getStockList().size());
     }
 
     @Test
     public void testDelete() {
-        portfolio.delete(stock1);
-        Assert.assertEquals(1, portfolio.getStockList().size());
+        portfolio.delete(portfolio.getStockList().get(0));
+        Assert.assertEquals(6, portfolio.getStockList().size());
+    }
+
+    @Test
+    public void testPrint(){
+        portfolio.print();
     }
 
 }
