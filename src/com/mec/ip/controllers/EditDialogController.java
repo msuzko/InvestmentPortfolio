@@ -54,8 +54,10 @@ public class EditDialogController {
         else
             txtDate.setText(date);
         txtTicker.setText(stock.getTicker());
-        txtCount.setText(String.valueOf(stock.getCount()));
-        txtCost.setText(String.valueOf(stock.getCost()));
+        if (stock.getCount() != 0) {
+            txtCount.setText(String.valueOf(stock.getCount()));
+            txtCost.setText(String.valueOf(stock.getCost()));
+        }
     }
 
     public void actionClose(ActionEvent actionEvent) {

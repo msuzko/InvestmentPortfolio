@@ -10,7 +10,8 @@ import java.util.Date;
 public class Stock {
 
     private Date date;
-    private SimpleStringProperty ticker = new SimpleStringProperty();
+    private SimpleStringProperty ticker = new SimpleStringProperty("");
+    private SimpleStringProperty name = new SimpleStringProperty("");
     private SimpleIntegerProperty count = new SimpleIntegerProperty();
     private SimpleDoubleProperty cost = new SimpleDoubleProperty();
     private SimpleDoubleProperty amount = new SimpleDoubleProperty();
@@ -35,10 +36,6 @@ public class Stock {
         this.amount.set(count * cost);
     }
 
-    public Date getDate() {
-        return date;
-    }
-
     public void setDate(Date date) {
         this.date = date;
         this.dateStr.set(format.format(date));
@@ -50,10 +47,6 @@ public class Stock {
 
     public double getAmount() {
         return amount.get();
-    }
-
-    public double getWeight() {
-        return weight.get();
     }
 
     public void setWeight(double weight) {
@@ -123,79 +116,39 @@ public class Stock {
         return amount;
     }
 
-    public void setAmount(double amount) {
-        this.amount.set(amount);
-    }
-
     public SimpleStringProperty dateStrProperty() {
         return dateStr;
-    }
-
-    public void setDateStr(String dateStr) {
-        this.dateStr.set(dateStr);
-    }
-
-    public double getCurrentCost() {
-        return currentCost.get();
     }
 
     public SimpleDoubleProperty currentCostProperty() {
         return currentCost;
     }
 
-    public void setCurrentCost(double currentCost) {
-        this.currentCost.set(currentCost);
-    }
-
     public SimpleDoubleProperty weightProperty() {
         return weight;
-    }
-
-    public double getPl() {
-        return pl.get();
     }
 
     public SimpleDoubleProperty plProperty() {
         return pl;
     }
 
-    public void setPl(double pl) {
-        this.pl.set(pl);
-    }
-
-    public double getPlPercent() {
-        return plPercent.get();
-    }
-
     public SimpleDoubleProperty plPercentProperty() {
         return plPercent;
-    }
-
-    public void setPlPercent(double plPercent) {
-        this.plPercent.set(plPercent);
-    }
-
-    public double getPe() {
-        return pe.get();
     }
 
     public SimpleDoubleProperty peProperty() {
         return pe;
     }
 
-    public void setPe(double pe) {
-        this.pe.set(pe);
-    }
-
-    public double getGoal() {
-        return goal.get();
-    }
-
     public SimpleDoubleProperty goalProperty() {
         return goal;
     }
 
-    public void setGoal(double goal) {
-        this.goal.set(goal);
+    public String getName() {
+        return name.get();
+    }
+
+    public SimpleStringProperty nameProperty() {
+        return name;
     }
 }

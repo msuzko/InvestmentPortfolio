@@ -2,29 +2,41 @@ package com.mec.ip.controllers;
 
 import com.mec.ip.interfaces.impls.CollectionPortfolio;
 import com.mec.ip.objects.Stock;
+import javafx.beans.property.ObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.controlsfx.control.textfield.CustomTextField;
+import org.controlsfx.control.textfield.TextFields;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
-public class MainController {
+public class MainController implements Initializable {
 
 
     public static final String EDIT_STOCK = "Изменить позицию";
     public static final String ADD_STOCK = "Добавить позицию";
     private CollectionPortfolio portfolio = new CollectionPortfolio();
 
+    @FXML
+    public CustomTextField txtSearch;
     @FXML
     public Button btnAdd;
     @FXML
@@ -65,22 +77,38 @@ public class MainController {
     private EditDialogController editDialogController;
     private Stage editDialogStage;
     private Stage mainStage;
+    private ResourceBundle bundle;
+    private ObservableList<Stock> backupList;
 
     public void setMainStage(Stage mainStage) {
         this.mainStage = mainStage;
     }
 
-    @FXML
-    private void initialize() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        bundle = resources;
         tablePortfolio.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         initColumns();
+        setupClearButtonField(txtSearch);
         initListeners();
         fillData();
         initLoaders();
     }
 
+    private void setupClearButtonField(CustomTextField customTextField) {
+        try {
+            Method m = TextFields.class.getDeclaredMethod("setupClearButtonField", TextField.class, ObjectProperty.class);
+            m.setAccessible(true);
+            m.invoke(null, customTextField, customTextField.rightProperty());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void fillData() {
         portfolio.fillTestData();
+        backupList = FXCollections.observableArrayList();
+        backupList.addAll(portfolio.getStockList());
         tablePortfolio.setItems(portfolio.getStockList());
     }
 
@@ -88,7 +116,7 @@ public class MainController {
         columnDate.setCellValueFactory(new PropertyValueFactory<>("dateStr"));
         columnTicker.setCellValueFactory(new PropertyValueFactory<>("ticker"));
         columnCount.setCellValueFactory(new PropertyValueFactory<>("count"));
-        columnCost.setCellValueFactory(new PropertyValueFactory<>("cost"));
+        columnCost.setCellValueFactory(new PropertyValueFactory<>("price"));
         columnAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
         columnWeight.setCellValueFactory(new PropertyValueFactory<>("weight"));
     }
@@ -96,6 +124,7 @@ public class MainController {
     private void initLoaders() {
         try {
             fxmlLoader.setLocation((getClass().getResource("../resource/edit.fxml")));
+            fxmlLoader.setResources(ResourceBundle.getBundle("com.mec.ip.bundles.Locale", new Locale("en")));
             fxmlEdit = fxmlLoader.load();
             editDialogController = fxmlLoader.getController();
         } catch (IOException e) {
@@ -109,7 +138,7 @@ public class MainController {
         tablePortfolio.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 editDialogController.setStock(tablePortfolio.getSelectionModel().getSelectedItem());
-                showDialog(EDIT_STOCK);
+                showDialog(bundle.getString("editPosition"));
             }
         });
     }
@@ -131,22 +160,26 @@ public class MainController {
         switch (button.getId()) {
             case "btnAdd":
                 editDialogController.setStock(new Stock());
-                showDialog(ADD_STOCK);
-                if (!editDialogController.isCancel())
+                showDialog(bundle.getString("addPosition"));
+                if (!editDialogController.isCancel()) {
                     portfolio.add(editDialogController.getStock());
+                    backupList.add(editDialogController.getStock());
+                }
                 break;
             case "btnEdit": {
                 Stock stock = tablePortfolio.getSelectionModel().getSelectedItems().get(0);
                 if (stock == null) return;
                 editDialogController.setStock(stock);
-                showDialog(EDIT_STOCK);
+                showDialog(bundle.getString("editPosition"));
                 updateCommonMarketPrice();
                 break;
             }
             case "btnDelete": {
                 List<Stock> selectedItems = new ArrayList<>(tablePortfolio.getSelectionModel().getSelectedItems());
-                for (Stock stock : selectedItems)
+                for (Stock stock : selectedItems) {
                     portfolio.getStockList().remove(stock);
+                    backupList.remove(stock);
+                }
                 break;
             }
         }
@@ -164,6 +197,19 @@ public class MainController {
         }
         editDialogStage.setTitle(title);
         editDialogStage.showAndWait();
+    }
+
+    public void actionSearch(ActionEvent actionEvent) {
+        portfolio.getStockList().clear();
+
+        for (Stock stock : backupList) {
+            if (stock.getTicker().toLowerCase().contains(txtSearch.getText().toLowerCase()) ||
+                    stock.getName().toLowerCase().contains(txtSearch.getText().toLowerCase())) {
+                portfolio.getStockList().add(stock);
+            }
+        }
+
+
     }
 
 }
