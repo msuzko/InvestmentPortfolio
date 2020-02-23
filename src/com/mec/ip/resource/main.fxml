@@ -80,19 +80,19 @@
                     <children>
                         <HBox minWidth="300.0">
                             <children>
-                                <Button fx:id="btnAdd" minWidth="20.0" mnemonicParsing="false" onAction="#showDialog"
+                                <Button fx:id="btnAdd" minWidth="20.0" mnemonicParsing="false" onAction="#actionButtonPressed"
                                         text="Добавить">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="10.0" right="5.0" top="10.0"/>
                                     </HBox.margin>
                                 </Button>
-                                <Button fx:id="btnEdit" mnemonicParsing="false" onAction="#showDialog"
+                                <Button fx:id="btnEdit" mnemonicParsing="false" onAction="#actionButtonPressed"
                                         text="Изменить">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="10.0" top="10.0"/>
                                     </HBox.margin>
                                 </Button>
-                                <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#showDialog"
+                                <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#actionButtonPressed"
                                         text="Удалить">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="10.0" top="10.0"/>

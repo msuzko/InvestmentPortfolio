@@ -10,12 +10,11 @@ import java.util.Date;
 public class Stock {
 
     private Date date;
-    private SimpleStringProperty ticker;
-    private SimpleIntegerProperty count;
-    private SimpleDoubleProperty cost;
-    private SimpleDoubleProperty commission;
-    private SimpleDoubleProperty amount;
-    private SimpleStringProperty dateStr = new SimpleStringProperty();
+    private SimpleStringProperty ticker = new SimpleStringProperty();
+    private SimpleIntegerProperty count = new SimpleIntegerProperty();
+    private SimpleDoubleProperty cost = new SimpleDoubleProperty();
+    private SimpleDoubleProperty amount = new SimpleDoubleProperty();
+    private SimpleStringProperty dateStr = new SimpleStringProperty("");
     private SimpleDoubleProperty currentCost = new SimpleDoubleProperty();
     private SimpleDoubleProperty weight = new SimpleDoubleProperty();
     private SimpleDoubleProperty pl = new SimpleDoubleProperty();
@@ -30,11 +29,10 @@ public class Stock {
 
     public Stock(Date date, String ticker, int count, double cost, double commission) {
         setDate(date);
-        this.ticker = new SimpleStringProperty(ticker);
-        this.count = new SimpleIntegerProperty(count);
-        this.cost = new SimpleDoubleProperty(cost);
-        this.commission = new SimpleDoubleProperty(commission);
-        this.amount = new SimpleDoubleProperty(count * cost);
+        this.ticker.set(ticker);
+        this.count.set(count);
+        this.cost.set(cost);
+        this.amount.set(count * cost);
     }
 
     public Date getDate() {
@@ -92,14 +90,6 @@ public class Stock {
         calculateAmount();
     }
 
-    public double getCommission() {
-        return commission.get();
-    }
-
-    public void setCommission(double commission) {
-        this.commission.set(commission);
-    }
-
     @Override
     public String toString() {
         return "Stock{" +
@@ -108,7 +98,6 @@ public class Stock {
                 ", count=" + count.get() +
                 ", cost=" + cost.get() +
                 ", cur. cost=" + currentCost.get() +
-                ", commission=" + commission.get() +
                 ", amount=" + amount.get() +
                 ", weight=" + weight.get() +
                 ", P/L=" + pl.get() +
@@ -118,4 +107,95 @@ public class Stock {
                 '}';
     }
 
+    public SimpleStringProperty tickerProperty() {
+        return ticker;
+    }
+
+    public SimpleIntegerProperty countProperty() {
+        return count;
+    }
+
+    public SimpleDoubleProperty costProperty() {
+        return cost;
+    }
+
+    public SimpleDoubleProperty amountProperty() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount.set(amount);
+    }
+
+    public SimpleStringProperty dateStrProperty() {
+        return dateStr;
+    }
+
+    public void setDateStr(String dateStr) {
+        this.dateStr.set(dateStr);
+    }
+
+    public double getCurrentCost() {
+        return currentCost.get();
+    }
+
+    public SimpleDoubleProperty currentCostProperty() {
+        return currentCost;
+    }
+
+    public void setCurrentCost(double currentCost) {
+        this.currentCost.set(currentCost);
+    }
+
+    public SimpleDoubleProperty weightProperty() {
+        return weight;
+    }
+
+    public double getPl() {
+        return pl.get();
+    }
+
+    public SimpleDoubleProperty plProperty() {
+        return pl;
+    }
+
+    public void setPl(double pl) {
+        this.pl.set(pl);
+    }
+
+    public double getPlPercent() {
+        return plPercent.get();
+    }
+
+    public SimpleDoubleProperty plPercentProperty() {
+        return plPercent;
+    }
+
+    public void setPlPercent(double plPercent) {
+        this.plPercent.set(plPercent);
+    }
+
+    public double getPe() {
+        return pe.get();
+    }
+
+    public SimpleDoubleProperty peProperty() {
+        return pe;
+    }
+
+    public void setPe(double pe) {
+        this.pe.set(pe);
+    }
+
+    public double getGoal() {
+        return goal.get();
+    }
+
+    public SimpleDoubleProperty goalProperty() {
+        return goal;
+    }
+
+    public void setGoal(double goal) {
+        this.goal.set(goal);
+    }
 }

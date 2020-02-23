@@ -25,7 +25,6 @@ public class testPortfolio {
         stock.setTicker("MU");
         stock.setCount(3);
         stock.setCost(58);
-        stock.setCommission(0.3f);
         return stock;
     }
 

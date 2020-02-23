@@ -5,28 +5,64 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="247.0" prefWidth="394.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mec.ip.controllers.EditDialogController">
+<VBox maxHeight="-Infinity" minHeight="-Infinity" minWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mec.ip.controllers.EditDialogController">
     <children>
-        <TableView fx:id="dealsTbl" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-            <columns>
-                <TableColumn prefWidth="75.0" text="Тип сделки" />
-                <TableColumn prefWidth="75.0" text="Дата" />
-                <TableColumn prefWidth="75.0" text="Количество" />
-                <TableColumn prefWidth="75.0" text="Цена" />
-                <TableColumn prefWidth="75.0" text="Комиссия" />
-            </columns>
-            <VBox.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-            </VBox.margin>
-            <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-            </columnResizePolicy>
-        </TableView>
+      <HBox minHeight="20.0" prefWidth="200.0">
+         <children>
+            <Label minWidth="92.0" text="Дата:">
+               <HBox.margin>
+                  <Insets left="10.0" right="10.0" top="5.0" />
+               </HBox.margin>
+            </Label>
+            <Label minWidth="92.0" text="Тикер:">
+               <HBox.margin>
+                  <Insets left="10.0" right="10.0" top="5.0" />
+               </HBox.margin>
+            </Label>
+            <Label minWidth="93.0" text="Количество:">
+               <HBox.margin>
+                  <Insets left="10.0" right="10.0" top="5.0" />
+               </HBox.margin>
+            </Label>
+            <Label minWidth="93.0" text="Цена:">
+               <HBox.margin>
+                  <Insets left="10.0" right="10.0" top="5.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
+        <HBox prefWidth="200.0">
+            <children>
+                <TextField fx:id="txtDate" minWidth="92.0" promptText="Дата">
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                    </HBox.margin>
+                </TextField>
+                <TextField fx:id="txtTicker" minWidth="92.0" promptText="Тикер">
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                    </HBox.margin>
+                </TextField>
+                <TextField fx:id="txtCount" minWidth="93.0" promptText="Количество">
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                    </HBox.margin>
+                </TextField>
+                <TextField fx:id="txtCost" minWidth="93.0" promptText="Цена">
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                    </HBox.margin>
+                </TextField>
+            </children>
+        </HBox>
         <AnchorPane>
             <children>
-                <Button defaultButton="true" mnemonicParsing="false" text="Изменить" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="5.0" />
+                <Button fx:id="btnOk" defaultButton="true" layoutX="358.0" layoutY="5.0" mnemonicParsing="false" onAction="#actionSave" prefHeight="27.0" prefWidth="65.0" text="ОК" AnchorPane.rightAnchor="82.0" AnchorPane.topAnchor="5.0" />
                 <Button fx:id="btnCancel" cancelButton="true" layoutX="445.0" layoutY="14.0" mnemonicParsing="false" onAction="#actionClose" prefWidth="65.0" text="Отмена" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
             </children>
+         <VBox.margin>
+            <Insets bottom="10.0" />
+         </VBox.margin>
         </AnchorPane>
     </children>
 </VBox>

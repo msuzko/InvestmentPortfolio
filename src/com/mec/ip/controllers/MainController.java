@@ -3,28 +3,26 @@ package com.mec.ip.controllers;
 import com.mec.ip.interfaces.impls.CollectionPortfolio;
 import com.mec.ip.objects.Stock;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainController {
 
 
+    public static final String EDIT_STOCK = "Изменить позицию";
+    public static final String ADD_STOCK = "Добавить позицию";
     private CollectionPortfolio portfolio = new CollectionPortfolio();
 
     @FXML
@@ -62,28 +60,58 @@ public class MainController {
     @FXML
     public Label marketPrice;
 
-    
+    private Parent fxmlEdit;
+    private FXMLLoader fxmlLoader = new FXMLLoader();
+    private EditDialogController editDialogController;
+    private Stage editDialogStage;
+    private Stage mainStage;
 
+    public void setMainStage(Stage mainStage) {
+        this.mainStage = mainStage;
+    }
 
     @FXML
     private void initialize() {
         tablePortfolio.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        initColumns();
+        initListeners();
+        fillData();
+        initLoaders();
+    }
 
+    private void fillData() {
+        portfolio.fillTestData();
+        tablePortfolio.setItems(portfolio.getStockList());
+    }
+
+    private void initColumns() {
         columnDate.setCellValueFactory(new PropertyValueFactory<>("dateStr"));
         columnTicker.setCellValueFactory(new PropertyValueFactory<>("ticker"));
         columnCount.setCellValueFactory(new PropertyValueFactory<>("count"));
         columnCost.setCellValueFactory(new PropertyValueFactory<>("cost"));
         columnAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
         columnWeight.setCellValueFactory(new PropertyValueFactory<>("weight"));
+    }
 
+    private void initLoaders() {
+        try {
+            fxmlLoader.setLocation((getClass().getResource("../resource/edit.fxml")));
+            fxmlEdit = fxmlLoader.load();
+            editDialogController = fxmlLoader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initListeners() {
         portfolio.getStockList().addListener(
                 (ListChangeListener<Stock>) c -> updateCommonMarketPrice());
-
-        portfolio.fillTestData();
-
-        tablePortfolio.setItems(portfolio.getStockList());
-
-
+        tablePortfolio.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                editDialogController.setStock(tablePortfolio.getSelectionModel().getSelectedItem());
+                showDialog(EDIT_STOCK);
+            }
+        });
     }
 
     private void updateCommonMarketPrice() {
@@ -95,46 +123,47 @@ public class MainController {
         return formatter.format(value);
     }
 
-    public void showDialog(ActionEvent actionEvent) {
+    public void actionButtonPressed(ActionEvent actionEvent) {
         Object source = actionEvent.getSource();
         if (!(source instanceof Button)) return;
 
         Button button = (Button) source;
         switch (button.getId()) {
             case "btnAdd":
-                showDialog("Добавить позицию", actionEvent, "../resource/add.fxml");
+                editDialogController.setStock(new Stock());
+                showDialog(ADD_STOCK);
+                if (!editDialogController.isCancel())
+                    portfolio.add(editDialogController.getStock());
                 break;
-            case "btnEdit":
-                showDialog("Изменить позицию", actionEvent, "../resource/add.fxml");
+            case "btnEdit": {
+                Stock stock = tablePortfolio.getSelectionModel().getSelectedItems().get(0);
+                if (stock == null) return;
+                editDialogController.setStock(stock);
+                showDialog(EDIT_STOCK);
+                updateCommonMarketPrice();
                 break;
-            case "btnDelete":
+            }
+            case "btnDelete": {
                 List<Stock> selectedItems = new ArrayList<>(tablePortfolio.getSelectionModel().getSelectedItems());
                 for (Stock stock : selectedItems)
                     portfolio.getStockList().remove(stock);
                 break;
+            }
         }
     }
 
-    public void showDialog(String title, ActionEvent actionEvent, String fxml) {
-        try {
-            Stage stage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource(fxml));
-            stage.setTitle(title);
-            stage.setMinHeight(115);
-            stage.setMinWidth(350);
-            stage.setResizable(false);
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(getOwner(actionEvent));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void showDialog(String title) {
+        if (editDialogStage == null) {
+            editDialogStage = new Stage();
+            editDialogStage.setMinHeight(115);
+            editDialogStage.setMinWidth(350);
+            editDialogStage.setResizable(false);
+            editDialogStage.setScene(new Scene(fxmlEdit));
+            editDialogStage.initModality(Modality.WINDOW_MODAL);
+            editDialogStage.initOwner(mainStage);
         }
-
+        editDialogStage.setTitle(title);
+        editDialogStage.showAndWait();
     }
 
-
-    private Window getOwner(ActionEvent actionEvent) {
-        return ((Node) actionEvent.getSource()).getScene().getWindow();
-    }
 }
