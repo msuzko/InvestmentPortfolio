@@ -1,8 +1,10 @@
 package com.mec.ip.controllers;
 
 import com.mec.ip.interfaces.impls.CollectionPortfolio;
+import com.mec.ip.objects.Lang;
 import com.mec.ip.objects.Stock;
 import com.mec.ip.utils.DialogManager;
+import com.mec.ip.utils.LocaleManager;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -15,7 +17,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
@@ -25,13 +26,12 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
-public class MainController implements Initializable {
+public class MainController extends Observable implements Initializable {
 
+    private static final String RU_CODE = "ru";
+    private static final String EN_CODE = "en";
     private CollectionPortfolio portfolio = new CollectionPortfolio();
 
     @FXML
@@ -70,6 +70,8 @@ public class MainController implements Initializable {
     public TableView<Stock> tablePortfolio;
     @FXML
     public Label marketPrice;
+    @FXML
+    public ComboBox<Lang> comboLocales;
 
     private Parent fxmlEdit;
     private FXMLLoader fxmlLoader = new FXMLLoader();
@@ -105,10 +107,28 @@ public class MainController implements Initializable {
     }
 
     private void fillData() {
+        fillTable();
+        fillLangComboBox();
+    }
+
+    private void fillTable() {
         portfolio.fillTestData();
         backupList = FXCollections.observableArrayList();
         backupList.addAll(portfolio.getStockList());
         tablePortfolio.setItems(portfolio.getStockList());
+    }
+
+    private void fillLangComboBox() {
+        Lang langRU = new Lang(0, RU_CODE, bundle.getString("ru"), LocaleManager.RU_LOCALE);
+        Lang langEN = new Lang(1, EN_CODE, bundle.getString("en"), LocaleManager.EN_LOCALE);
+
+        comboLocales.getItems().add(langRU);
+        comboLocales.getItems().add(langEN);
+
+        if (LocaleManager.getCurrentLang() == null)
+            comboLocales.getSelectionModel().select(0);
+        else
+            comboLocales.getSelectionModel().select(LocaleManager.getCurrentLang().getIndex());
     }
 
     private void initColumns() {
@@ -141,10 +161,17 @@ public class MainController implements Initializable {
                 showDialog(bundle.getString("editPosition"));
             }
         });
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            actionSearch();
+        });
 
-        txtSearch.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.ENTER))
-                actionSearch();
+
+        comboLocales.setOnAction(event -> {
+            Lang selectedLang = comboLocales.getSelectionModel().getSelectedItem();
+            LocaleManager.setCurrentLang(selectedLang);
+
+            setChanged();
+            notifyObservers(selectedLang);
         });
     }
 
