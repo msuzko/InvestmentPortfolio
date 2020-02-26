@@ -2,6 +2,7 @@ package com.mec.ip.controllers;
 
 import com.mec.ip.interfaces.impls.CollectionPortfolio;
 import com.mec.ip.objects.Stock;
+import com.mec.ip.utils.DialogManager;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -14,6 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
@@ -30,9 +32,6 @@ import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
 
-
-    public static final String EDIT_STOCK = "Изменить позицию";
-    public static final String ADD_STOCK = "Добавить позицию";
     private CollectionPortfolio portfolio = new CollectionPortfolio();
 
     @FXML
@@ -135,11 +134,17 @@ public class MainController implements Initializable {
     private void initListeners() {
         portfolio.getStockList().addListener(
                 (ListChangeListener<Stock>) c -> updateCommonMarketPrice());
+
         tablePortfolio.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 editDialogController.setStock(tablePortfolio.getSelectionModel().getSelectedItem());
                 showDialog(bundle.getString("editPosition"));
             }
+        });
+
+        txtSearch.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.ENTER))
+                actionSearch();
         });
     }
 
@@ -167,14 +172,15 @@ public class MainController implements Initializable {
                 }
                 break;
             case "btnEdit": {
+                if (positionNotSelected()) return;
                 Stock stock = tablePortfolio.getSelectionModel().getSelectedItems().get(0);
-                if (stock == null) return;
                 editDialogController.setStock(stock);
                 showDialog(bundle.getString("editPosition"));
                 updateCommonMarketPrice();
                 break;
             }
             case "btnDelete": {
+                if (positionNotSelected()) return;
                 List<Stock> selectedItems = new ArrayList<>(tablePortfolio.getSelectionModel().getSelectedItems());
                 for (Stock stock : selectedItems) {
                     portfolio.getStockList().remove(stock);
@@ -183,6 +189,14 @@ public class MainController implements Initializable {
                 break;
             }
         }
+    }
+
+    private boolean positionNotSelected() {
+        if (tablePortfolio.getSelectionModel().getSelectedItems().size() == 0) {
+            DialogManager.showErrorDialog(bundle.getString("error"), bundle.getString("select_position"));
+            return true;
+        }
+        return false;
     }
 
     public void showDialog(String title) {
@@ -199,7 +213,7 @@ public class MainController implements Initializable {
         editDialogStage.showAndWait();
     }
 
-    public void actionSearch(ActionEvent actionEvent) {
+    public void actionSearch() {
         portfolio.getStockList().clear();
 
         for (Stock stock : backupList) {
