@@ -11,17 +11,15 @@ public abstract class PortfolioAbstract implements PortfolioDAO {
 
 
     @Override
-    public void recalculate() {
+    public void updateWeight() {
         double sum = getCurrentSum();
         stockList.forEach(stock -> {
             stock.setWeight(Math.round(stock.getAmount() / sum * 100, 2));
-            stock.setPL(Math.round(stock.getAmount() - stock.getCount() * stock.getPrice(),2));
-            stock.setPlPercent(Math.round(stock.getAmount() / stock.getPurchaseAmount() * 100-100, 2));
         });
     }
 
     @Override
-    public double getSum() {
+    public double getPurchaseSum() {
         return stockList.stream().mapToDouble(Stock::getPurchaseAmount).sum();
     }
 

@@ -2,8 +2,8 @@ package com.mec.ip.controllers;
 
 import com.mec.ip.interfaces.PortfolioDAO;
 import com.mec.ip.interfaces.Strategy;
-import com.mec.ip.interfaces.impls.portfolio.DBPortfolio;
 import com.mec.ip.interfaces.impls.FinvizStrategy;
+import com.mec.ip.interfaces.impls.portfolio.HibernatePortfolio;
 import com.mec.ip.objects.Lang;
 import com.mec.ip.objects.Stock;
 import com.mec.ip.utils.DialogManager;
@@ -36,7 +36,7 @@ public class MainController extends Observable implements Initializable {
 
     private static final String RU_CODE = "ru";
     private static final String EN_CODE = "en";
-    private PortfolioDAO portfolio = new DBPortfolio();
+    private PortfolioDAO portfolio = new HibernatePortfolio();
     private Runnable updater = new UpdateData();
     private Strategy strategy = new FinvizStrategy(portfolio);
 
@@ -121,7 +121,6 @@ public class MainController extends Observable implements Initializable {
     }
 
     private void fillTable() {
-        //  portfolio.fillTestData();
         tablePortfolio.setItems(portfolio.getStockList());
     }
 
@@ -227,8 +226,8 @@ public class MainController extends Observable implements Initializable {
 
     private void updateCommonMarketPrice() {
         marketPrice.setText(decimalFormat(portfolio.getCurrentSum()) + " $");
-        double pl = Math.round(portfolio.getCurrentSum() - portfolio.getSum(), 2);
-        double percent = Math.round(portfolio.getCurrentSum() / portfolio.getSum() * 100 - 100, 2);
+        double pl = Math.round(portfolio.getCurrentSum() - portfolio.getPurchaseSum(), 2);
+        double percent = Math.round(portfolio.getCurrentSum() / portfolio.getPurchaseSum() * 100 - 100, 2);
         commonPL.setText(decimalFormat(pl) + " $ / " + percent + "%");
         if (pl < 0)
             commonPL.setTextFill(Paint.valueOf("red"));
@@ -317,10 +316,14 @@ public class MainController extends Observable implements Initializable {
 
         @Override
         public void run() {
-
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                return;
+            }
             while (true) {
                 long start = System.currentTimeMillis();
-                strategy.updateDataInList(new ArrayList<>(portfolio.getStockList()));
+                strategy.updateDataInList(new ArrayList<>(portfolio.find(txtSearch.getText())));
                 Platform.runLater(updater);
                 try {
                     Thread.sleep(60000);
@@ -338,7 +341,7 @@ public class MainController extends Observable implements Initializable {
         @Override
         public void run() {
             updateCommonMarketPrice();
-            portfolio.recalculate();
+            portfolio.updateWeight();
         }
     }
 

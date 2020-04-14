@@ -17,8 +17,8 @@ public interface PortfolioDAO {
 
     double getCurrentSum();
 
-    double getSum();
+    double getPurchaseSum();
 
-    void recalculate();
+    void updateWeight();
 
 }

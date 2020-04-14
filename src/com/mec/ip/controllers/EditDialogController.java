@@ -71,7 +71,7 @@ public class EditDialogController implements Initializable {
         txtTicker.setText(stock.getTicker());
         if (stock.getCount() != 0) {
             txtCount.setText(String.valueOf(stock.getCount()));
-            txtPrice.setText(String.valueOf(stock.getPrice()));
+            txtPrice.setText(String.valueOf(stock.getPurchasePrice()));
         } else{
             txtCount.setText("");
             txtPrice.setText("");
@@ -96,7 +96,7 @@ public class EditDialogController implements Initializable {
         }
         stock.setTicker(txtTicker.getText().trim());
         stock.setCount(Integer.parseInt(txtCount.getText()));
-        stock.setPrice(Double.parseDouble(txtPrice.getText()));
+        stock.setPurchasePrice(Double.parseDouble(txtPrice.getText()));
         try {
             stock.setDate(formatter.parse(txtDate.getText()));
         } catch (ParseException e) {

@@ -27,7 +27,9 @@ public class FinvizStrategy implements Strategy {
     public List<Stock> updateDataInList(List<Stock> stockList) {
         List<Stock> list = new ArrayList<>();
         for (Stock stock : stockList) {
-            updateStock(stock);
+            Thread thread  = new Thread(new UpdateData(stock));
+            thread.start();
+           // updateStock(stock);
             list.add(stock);
         }
         return list;
@@ -103,5 +105,19 @@ public class FinvizStrategy implements Strategy {
         return Jsoup.connect(String.format(URL_FORMAT, searchString))
                 .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36")
                 .referrer("").get();
+    }
+
+    private class UpdateData implements Runnable {
+
+        private Stock stock;
+
+        public UpdateData(Stock stock) {
+            this.stock = stock;
+        }
+
+        @Override
+        public void run() {
+            updateStock(stock);
+        }
     }
 }

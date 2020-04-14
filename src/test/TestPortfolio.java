@@ -22,7 +22,7 @@ public class TestPortfolio {
         stock.setDate(Calendar.getInstance().getTime());
         stock.setTicker("MU");
         stock.setCount(3);
-        stock.setPrice(58);
+        stock.setPurchasePrice(58);
         return stock;
     }
 

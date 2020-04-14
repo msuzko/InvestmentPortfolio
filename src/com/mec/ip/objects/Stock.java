@@ -5,18 +5,18 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
+@Entity(name = "stocks")
 public class Stock {
 
-    private Date date;
     private SimpleStringProperty ticker = new SimpleStringProperty("");
     private SimpleStringProperty title = new SimpleStringProperty("");
     private SimpleIntegerProperty count = new SimpleIntegerProperty();
-    private SimpleDoubleProperty price = new SimpleDoubleProperty();
+    private SimpleDoubleProperty purchasePrice = new SimpleDoubleProperty();
     private SimpleDoubleProperty amount = new SimpleDoubleProperty();
     private SimpleStringProperty dateStr = new SimpleStringProperty("");
     private SimpleDoubleProperty currentPrice = new SimpleDoubleProperty();
@@ -32,35 +32,41 @@ public class Stock {
     public Stock() {
     }
 
-    public Stock(Date date, String ticker, int count, double price, double commission) {
-        setDate(date);
-        this.ticker.set(ticker);
-        this.count.set(count);
-        this.price.set(price);
-        this.amount.set(count * currentPrice.get());
+    public Stock(Date date, String ticker, int count, double purchasePrice) {
+        this.dateStr = new SimpleStringProperty(format.format(date));
+        this.ticker = new SimpleStringProperty(ticker);
+        this.count = new SimpleIntegerProperty(count);
+        this.purchasePrice = new SimpleDoubleProperty(purchasePrice);
+        this.amount = new SimpleDoubleProperty(count * currentPrice.get());
     }
 
     public void setDate(Date date) {
-        this.date = date;
-        this.dateStr.set(format.format(date));
+        this.dateStr = new SimpleStringProperty(format.format(date));
     }
 
+    @Id
+    @Column(name = "_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Basic
+    @Column(name = "date", nullable = false, length = -1)
     public String getDateStr() {
         return dateStr.get();
     }
 
-    public double getAmount() {
-        return amount.get();
+    public void setDateStr(String dateStr) {
+        this.dateStr.set(dateStr);
     }
 
-    public double getPurchaseAmount() {
-        return count.get() * price.get();
-    }
-
-    public void setWeight(double weight) {
-        this.weight.set(weight);
-    }
-
+    @Basic
+    @Column(name = "ticker", nullable = false, length = -1)
     public String getTicker() {
         return ticker.get();
     }
@@ -69,23 +75,104 @@ public class Stock {
         this.ticker.set(ticker);
     }
 
+    @Basic
+    @Column(name = "title", nullable = true, length = -1)
+    public String getTitle() {
+        return title.get();
+    }
+
+    public void setTitle(String title) {
+        this.title.set(title);
+    }
+
+    @Basic
+    @Column(name = "count", nullable = false)
     public int getCount() {
         return count.get();
+    }
+
+    public void setCount(int count) {
+        this.count.set(count);
+        calculateAmount();
+    }
+
+    @Basic
+    @Column(name = "purchase_price", nullable = false, precision = 0)
+    public double getPurchasePrice() {
+        return purchasePrice.get();
+    }
+
+    public void setPurchasePrice(double price) {
+        this.purchasePrice.set(price);
+        calculatePL();
+    }
+
+    @Basic
+    @Column(name = "price", nullable = true, precision = 0)
+    public double getCurrentPrice() {
+        return currentPrice.get();
+    }
+
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice.set(currentPrice);
+        calculateAmount();
+        calculatePL();
+    }
+
+    private void calculatePL() {
+        if (getCurrentPrice() != 0 && getPurchasePrice() != 0) {
+            setPL(Math.round(getCount() * (getCurrentPrice() - getPurchasePrice()), 2));
+            setPlPercent(Math.round(getAmount() / getPurchaseAmount() * 100-100, 2));
+        }
+    }
+
+    @Basic
+    @Column(name = "pe", nullable = true, precision = 0)
+    public double getPE() {
+        return pe.get();
     }
 
     public void setPE(double pe) {
         this.pe.set(pe);
     }
 
+    @Basic
+    @Column(name = "goal", nullable = true, precision = 0)
+    public double getGoal() {
+        return goal.get();
+    }
+
     public void setGoal(double goal) {
         this.goal.set(goal);
     }
 
-    public void setCurrentPrice(double currentPrice) {
-        this.currentPrice.set(currentPrice);
-        calculateAmount();
+    @Transient
+    public double getAmount() {
+        return amount.get();
     }
 
+    public void setAmount(double amount) {
+        this.amount.set(amount);
+    }
+
+    @Transient
+    public double getPL() {
+        return pl.get();
+    }
+
+    @Transient
+    public double getPlPercent() {
+        return plPercent.get();
+    }
+
+    @Transient
+    public double getPurchaseAmount() {
+        return count.get() * purchasePrice.get();
+    }
+
+    public void setWeight(double weight) {
+        this.weight.set(weight);
+    }
 
     public void setPL(double pl) {
         this.pl.set(pl);
@@ -95,25 +182,8 @@ public class Stock {
         this.plPercent.set(plPercent);
     }
 
-    public void setCount(int count) {
-        this.count.set(count);
-        calculateAmount();
-    }
-
     private void calculateAmount() {
         this.amount.set(Math.round(this.count.get() * this.currentPrice.get(), 2));
-    }
-
-    public double getPrice() {
-        return price.get();
-    }
-
-    public void setPrice(double price) {
-        this.price.set(price);
-    }
-
-    public void setTitle(String title) {
-        this.title.set(title);
     }
 
     @Override
@@ -122,7 +192,7 @@ public class Stock {
                 "date=" + dateStr.get() +
                 ", ticker='" + ticker.get() + '\'' +
                 ", count=" + count.get() +
-                ", price=" + price.get() +
+                ", purc. price=" + purchasePrice.get() +
                 ", cur. price=" + currentPrice.get() +
                 ", amount=" + amount.get() +
                 ", weight=" + weight.get() +
@@ -142,7 +212,7 @@ public class Stock {
     }
 
     public SimpleDoubleProperty priceProperty() {
-        return price;
+        return purchasePrice;
     }
 
     public SimpleDoubleProperty amountProperty() {
@@ -177,40 +247,23 @@ public class Stock {
         return goal;
     }
 
-    public String getTitle() {
-        return title.get();
-    }
-
     public SimpleStringProperty titleProperty() {
         return title;
     }
 
-    public double getGoal() {
-        return goal.get();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Stock stock = (Stock) o;
+        return getId() == stock.getId() &&
+                Objects.equals(getTicker(), stock.getTicker()) &&
+                Objects.equals(getTitle(), stock.getTitle());
     }
 
-    public double getPE() {
-        return pe.get();
-    }
-
-    public double getCurrentPrice() {
-        return currentPrice.get();
-    }
-
-    public double getPL() {
-        return pl.get();
-    }
-
-    public double getPlPercent() {
-        return plPercent.get();
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTicker(), getTitle(), getId());
     }
 }
 

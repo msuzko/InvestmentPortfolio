@@ -50,7 +50,7 @@ public class DBPortfolio extends PortfolioAbstract {
         statement.setString(2, stock.getTicker());
         statement.setString(3, stock.getTitle());
         statement.setInt(4, stock.getCount());
-        statement.setDouble(5, stock.getPrice());
+        statement.setDouble(5, stock.getPurchasePrice());
         statement.setDouble(6, stock.getCurrentPrice());
         statement.setDouble(7, stock.getPE());
         statement.setDouble(8, stock.getGoal());
@@ -84,7 +84,7 @@ public class DBPortfolio extends PortfolioAbstract {
         } catch (SQLException | IllegalAccessException | ClassNotFoundException | InstantiationException e) {
             System.out.println(e.getMessage());
         }
-        recalculate();
+        updateWeight();
 
         return stockList;
     }
@@ -108,7 +108,7 @@ public class DBPortfolio extends PortfolioAbstract {
         } catch (SQLException | IllegalAccessException | ClassNotFoundException | InstantiationException e) {
             System.out.println(e.getMessage());
         }
-        recalculate();
+        updateWeight();
         return stockList;
     }
 
@@ -125,7 +125,7 @@ public class DBPortfolio extends PortfolioAbstract {
                 stock.setDate(new Date());
             }
             stock.setCount(resultSet.getInt("count"));
-            stock.setPrice(resultSet.getDouble("purchase_price"));
+            stock.setPurchasePrice(resultSet.getDouble("purchase_price"));
             stock.setCurrentPrice(resultSet.getDouble("price"));
             stock.setPE(resultSet.getDouble("pe"));
             stock.setGoal(resultSet.getDouble("goal"));

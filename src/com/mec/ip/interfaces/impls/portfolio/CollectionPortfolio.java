@@ -10,8 +10,7 @@ import java.util.Date;
 
 public class CollectionPortfolio extends PortfolioAbstract {
 
-    private ObservableList<Stock> stockList = FXCollections.observableArrayList();
-    private ObservableList<Stock> backupList;
+    private ObservableList<Stock> backupList = FXCollections.observableArrayList();;
 
 
     public CollectionPortfolio() {
@@ -22,13 +21,13 @@ public class CollectionPortfolio extends PortfolioAbstract {
     public boolean add(Stock stock) {
         stockList.add(stock);
         backupList.add(stock);
-        recalculate();
+        updateWeight();
         return true;
     }
 
     @Override
     public boolean update(Stock stock) {
-        recalculate();
+        updateWeight();
         return true;
     }
 
@@ -36,7 +35,7 @@ public class CollectionPortfolio extends PortfolioAbstract {
     public boolean delete(Stock stock) {
         stockList.remove(stock);
         backupList.remove(stock);
-        recalculate();
+        updateWeight();
         return true;
     }
 
@@ -50,7 +49,7 @@ public class CollectionPortfolio extends PortfolioAbstract {
                 stockList.add(stock);
             }
         }
-        recalculate();
+        updateWeight();
         return stockList;
     }
 
@@ -76,13 +75,13 @@ public class CollectionPortfolio extends PortfolioAbstract {
 
 
     private void fillTestData() {
-        stockList.add(new Stock(getDate(-10), "VEON", 900, 2.447, 2));
-        stockList.add(new Stock(getDate(-25), "F", 364, 8.69, 0.8));
-        stockList.add(new Stock(getDate(-13), "AA", 70, 17.15, 0.3));
-        stockList.add(new Stock(getDate(-19), "M", 100, 19.7, 0.85));
-        stockList.add(new Stock(getDate(-3), "GILD", 8, 63.65, 1.4));
-        stockList.add(new Stock(getDate(-48), "V", 2, 177.3, 0.7));
-        stockList.add(new Stock(getDate(-21), "AXP", 3, 117.94, 0.2));
+        stockList.add(new Stock(getDate(-10), "VEON", 900, 2.447));
+        stockList.add(new Stock(getDate(-25), "F", 364, 8.69));
+        stockList.add(new Stock(getDate(-13), "AA", 70, 17.15));
+        stockList.add(new Stock(getDate(-19), "M", 100, 19.7));
+        stockList.add(new Stock(getDate(-3), "GILD", 8, 63.65));
+        stockList.add(new Stock(getDate(-48), "V", 2, 177.3));
+        stockList.add(new Stock(getDate(-21), "AXP", 3, 117.94));
         // recalculate();
     }
 
