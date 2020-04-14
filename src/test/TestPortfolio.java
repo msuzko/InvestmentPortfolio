@@ -1,6 +1,6 @@
 package test;
 
-import com.mec.ip.interfaces.impls.CollectionPortfolio;
+import com.mec.ip.interfaces.impls.portfolio.CollectionPortfolio;
 import com.mec.ip.objects.Stock;
 import org.junit.Assert;
 import org.junit.Before;
@@ -8,15 +8,13 @@ import org.junit.Test;
 
 import java.util.Calendar;
 
-public class testPortfolio {
+public class TestPortfolio {
 
     CollectionPortfolio portfolio;
 
     @Before
     public void init() {
         portfolio = new CollectionPortfolio();
-
-        portfolio.fillTestData();
     }
 
     private Stock getNewStock() {
@@ -24,7 +22,7 @@ public class testPortfolio {
         stock.setDate(Calendar.getInstance().getTime());
         stock.setTicker("MU");
         stock.setCount(3);
-        stock.setCost(58);
+        stock.setPrice(58);
         return stock;
     }
 

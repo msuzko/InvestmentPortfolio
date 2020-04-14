@@ -1,14 +1,16 @@
 package com.mec.ip.controllers;
 
-import com.mec.ip.interfaces.impls.CollectionPortfolio;
+import com.mec.ip.interfaces.PortfolioDAO;
+import com.mec.ip.interfaces.Strategy;
+import com.mec.ip.interfaces.impls.portfolio.DBPortfolio;
+import com.mec.ip.interfaces.impls.FinvizStrategy;
 import com.mec.ip.objects.Lang;
 import com.mec.ip.objects.Stock;
 import com.mec.ip.utils.DialogManager;
 import com.mec.ip.utils.LocaleManager;
+import com.mec.ip.utils.Math;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,6 +19,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
@@ -32,7 +36,10 @@ public class MainController extends Observable implements Initializable {
 
     private static final String RU_CODE = "ru";
     private static final String EN_CODE = "en";
-    private CollectionPortfolio portfolio = new CollectionPortfolio();
+    private PortfolioDAO portfolio = new DBPortfolio();
+    private Runnable updater = new UpdateData();
+    private Strategy strategy = new FinvizStrategy(portfolio);
+
 
     @FXML
     public CustomTextField txtSearch;
@@ -47,13 +54,13 @@ public class MainController extends Observable implements Initializable {
     @FXML
     public TableColumn<Stock, String> columnTicker;
     @FXML
-    public TableColumn<Stock, String> columnName;
+    public TableColumn<Stock, String> columnTitle;
     @FXML
     public TableColumn<Stock, Integer> columnCount;
     @FXML
-    public TableColumn<Stock, Double> columnCost;
+    public TableColumn<Stock, Double> columnPrice;
     @FXML
-    public TableColumn<Stock, Double> columnCurrentCost;
+    public TableColumn<Stock, Double> columnCurrentPrice;
     @FXML
     public TableColumn<Stock, Double> columnAmount;
     @FXML
@@ -71,6 +78,8 @@ public class MainController extends Observable implements Initializable {
     @FXML
     public Label marketPrice;
     @FXML
+    public Label commonPL;
+    @FXML
     public ComboBox<Lang> comboLocales;
 
     private Parent fxmlEdit;
@@ -79,7 +88,6 @@ public class MainController extends Observable implements Initializable {
     private Stage editDialogStage;
     private Stage mainStage;
     private ResourceBundle bundle;
-    private ObservableList<Stock> backupList;
 
     public void setMainStage(Stage mainStage) {
         this.mainStage = mainStage;
@@ -94,6 +102,7 @@ public class MainController extends Observable implements Initializable {
         initListeners();
         fillData();
         initLoaders();
+        new Thread(new Indicators()).start();
     }
 
     private void setupClearButtonField(CustomTextField customTextField) {
@@ -112,9 +121,7 @@ public class MainController extends Observable implements Initializable {
     }
 
     private void fillTable() {
-        portfolio.fillTestData();
-        backupList = FXCollections.observableArrayList();
-        backupList.addAll(portfolio.getStockList());
+        //  portfolio.fillTestData();
         tablePortfolio.setItems(portfolio.getStockList());
     }
 
@@ -134,10 +141,57 @@ public class MainController extends Observable implements Initializable {
     private void initColumns() {
         columnDate.setCellValueFactory(new PropertyValueFactory<>("dateStr"));
         columnTicker.setCellValueFactory(new PropertyValueFactory<>("ticker"));
+        columnTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         columnCount.setCellValueFactory(new PropertyValueFactory<>("count"));
-        columnCost.setCellValueFactory(new PropertyValueFactory<>("price"));
+        columnPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
         columnAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
         columnWeight.setCellValueFactory(new PropertyValueFactory<>("weight"));
+        columnPE.setCellValueFactory(new PropertyValueFactory<>("pe"));
+        columnGoal.setCellValueFactory(new PropertyValueFactory<>("goal"));
+        columnCurrentPrice.setCellValueFactory(new PropertyValueFactory<>("currentPrice"));
+        columnPL.setCellValueFactory(new PropertyValueFactory<>("pl"));
+        columnPercentPL.setCellValueFactory(new PropertyValueFactory<>("plPercent"));
+
+        columnPL.setCellFactory(param -> new PLTableCell());
+        columnPercentPL.setCellFactory(param -> new PLTableCell());
+
+        columnGoal.setCellFactory(param -> new GoalTableCell());
+    }
+
+    private static class PLTableCell extends TableCell<Stock, Double> {
+        @Override
+        protected void updateItem(Double item, boolean empty) {
+            super.updateItem(item, empty);
+            if (!isEmpty()) {
+                Stock stock = ((Stock) this.getTableRow().getItem());
+                if (item != null && stock != null) {
+                    if (item <= 0)
+                        this.setTextFill(Color.RED);
+                    else
+                        this.setTextFill(Color.GREEN);
+                    this.setText(decimalFormat(item));
+                } else this.setText(null);
+            } else this.setText(null);
+        }
+    }
+
+    private static class GoalTableCell extends TableCell<Stock, Double> {
+
+        @Override
+        protected void updateItem(Double item, boolean empty) {
+            super.updateItem(item, empty);
+            if (!isEmpty()) {
+                Stock stock = ((Stock) this.getTableRow().getItem());
+                if (item != null && stock != null) {
+                    if (item <= stock.getCurrentPrice())
+                        this.setTextFill(Color.RED);
+                    else
+                        this.setTextFill(Color.GREEN);
+                    this.setText(decimalFormat(item));
+                } else this.setText(null);
+
+            } else this.setText(null);
+        }
     }
 
     private void initLoaders() {
@@ -152,8 +206,6 @@ public class MainController extends Observable implements Initializable {
     }
 
     private void initListeners() {
-        portfolio.getStockList().addListener(
-                (ListChangeListener<Stock>) c -> updateCommonMarketPrice());
 
         tablePortfolio.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -161,9 +213,7 @@ public class MainController extends Observable implements Initializable {
                 showDialog(bundle.getString("editPosition"));
             }
         });
-        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-            actionSearch();
-        });
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> actionSearch());
 
 
         comboLocales.setOnAction(event -> {
@@ -176,10 +226,18 @@ public class MainController extends Observable implements Initializable {
     }
 
     private void updateCommonMarketPrice() {
-        marketPrice.setText(String.valueOf(decimalFormat(portfolio.getSum())));
+        marketPrice.setText(decimalFormat(portfolio.getCurrentSum()) + " $");
+        double pl = Math.round(portfolio.getCurrentSum() - portfolio.getSum(), 2);
+        double percent = Math.round(portfolio.getCurrentSum() / portfolio.getSum() * 100 - 100, 2);
+        commonPL.setText(decimalFormat(pl) + " $ / " + percent + "%");
+        if (pl < 0)
+            commonPL.setTextFill(Paint.valueOf("red"));
+        else
+            commonPL.setTextFill(Paint.valueOf("green"));
+
     }
 
-    private String decimalFormat(double value) {
+    private static String decimalFormat(double value) {
         DecimalFormat formatter = new DecimalFormat("###,###.##");
         return formatter.format(value);
     }
@@ -195,23 +253,24 @@ public class MainController extends Observable implements Initializable {
                 showDialog(bundle.getString("addPosition"));
                 if (!editDialogController.isCancel()) {
                     portfolio.add(editDialogController.getStock());
-                    backupList.add(editDialogController.getStock());
+                    updateData(editDialogController.getStock());
                 }
+
                 break;
             case "btnEdit": {
                 if (positionNotSelected()) return;
                 Stock stock = tablePortfolio.getSelectionModel().getSelectedItems().get(0);
                 editDialogController.setStock(stock);
                 showDialog(bundle.getString("editPosition"));
-                updateCommonMarketPrice();
+                portfolio.update(stock);
+                updateData(stock);
                 break;
             }
             case "btnDelete": {
                 if (positionNotSelected()) return;
                 List<Stock> selectedItems = new ArrayList<>(tablePortfolio.getSelectionModel().getSelectedItems());
                 for (Stock stock : selectedItems) {
-                    portfolio.getStockList().remove(stock);
-                    backupList.remove(stock);
+                    portfolio.delete(stock);
                 }
                 break;
             }
@@ -241,16 +300,46 @@ public class MainController extends Observable implements Initializable {
     }
 
     public void actionSearch() {
-        portfolio.getStockList().clear();
+        tablePortfolio.setItems(portfolio.find(txtSearch.getText()));
+        updateCommonMarketPrice();
+    }
 
-        for (Stock stock : backupList) {
-            if (stock.getTicker().toLowerCase().contains(txtSearch.getText().toLowerCase()) ||
-                    stock.getName().toLowerCase().contains(txtSearch.getText().toLowerCase())) {
-                portfolio.getStockList().add(stock);
+    private void updateData(Stock stock) {
+        new Thread(() -> {
+            strategy.updateStock(stock);
+            Platform.runLater(updater);
+        }).start();
+
+    }
+
+    private class Indicators extends Observable implements Runnable {
+
+
+        @Override
+        public void run() {
+
+            while (true) {
+                long start = System.currentTimeMillis();
+                strategy.updateDataInList(new ArrayList<>(portfolio.getStockList()));
+                Platform.runLater(updater);
+                try {
+                    Thread.sleep(60000);
+                } catch (InterruptedException e) {
+                    break;
+                }
+                System.out.println("time: " + (System.currentTimeMillis() - start));
             }
         }
 
+    }
 
+    private class UpdateData implements Runnable {
+
+        @Override
+        public void run() {
+            updateCommonMarketPrice();
+            portfolio.recalculate();
+        }
     }
 
 }

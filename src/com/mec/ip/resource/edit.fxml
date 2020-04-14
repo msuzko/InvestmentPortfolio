@@ -5,6 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import java.net.URL?>
 <VBox maxHeight="-Infinity" minHeight="-Infinity" minWidth="450.0" xmlns="http://javafx.com/javafx/8"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mec.ip.controllers.EditDialogController">
     <children>
@@ -49,7 +50,7 @@
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
                     </HBox.margin>
                 </TextField>
-                <TextField fx:id="txtCost" minWidth="93.0" promptText="%price">
+                <TextField fx:id="txtPrice" minWidth="93.0" promptText="%price">
                     <HBox.margin>
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
                     </HBox.margin>
@@ -70,4 +71,7 @@
             </VBox.margin>
         </AnchorPane>
     </children>
+<!--    <stylesheets>-->
+<!--        <URL value="@ip.css"/>-->
+<!--    </stylesheets>-->
 </VBox>

@@ -1,37 +1,63 @@
-package com.mec.ip.interfaces.impls;
+package com.mec.ip.interfaces.impls.portfolio;
 
-import com.mec.ip.interfaces.Portfolio;
+import com.mec.ip.interfaces.PortfolioAbstract;
 import com.mec.ip.objects.Stock;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 
-public class CollectionPortfolio implements Portfolio {
+public class CollectionPortfolio extends PortfolioAbstract {
 
     private ObservableList<Stock> stockList = FXCollections.observableArrayList();
+    private ObservableList<Stock> backupList;
+
+
+    public CollectionPortfolio() {
+        fillTestData();
+    }
 
     @Override
-    public void add(Stock stock) {
+    public boolean add(Stock stock) {
         stockList.add(stock);
+        backupList.add(stock);
         recalculate();
+        return true;
     }
 
     @Override
-    public void update(Stock stock) {
+    public boolean update(Stock stock) {
         recalculate();
+        return true;
     }
 
     @Override
-    public void delete(Stock stock) {
+    public boolean delete(Stock stock) {
         stockList.remove(stock);
+        backupList.remove(stock);
         recalculate();
+        return true;
     }
 
+    @Override
+    public ObservableList<Stock> find(String text) {
+        stockList.clear();
+
+        for (Stock stock : backupList) {
+            if (stock.getTicker().toLowerCase().contains(text.toLowerCase()) ||
+                    stock.getTitle().toLowerCase().contains(text.toLowerCase())) {
+                stockList.add(stock);
+            }
+        }
+        recalculate();
+        return stockList;
+    }
+
+    @Override
     public ObservableList<Stock> getStockList() {
+        backupList = FXCollections.observableArrayList();
+        backupList.addAll(stockList);
         return stockList;
     }
 
@@ -49,7 +75,7 @@ public class CollectionPortfolio implements Portfolio {
     }
 
 
-    public void fillTestData() {
+    private void fillTestData() {
         stockList.add(new Stock(getDate(-10), "VEON", 900, 2.447, 2));
         stockList.add(new Stock(getDate(-25), "F", 364, 8.69, 0.8));
         stockList.add(new Stock(getDate(-13), "AA", 70, 17.15, 0.3));
@@ -57,25 +83,7 @@ public class CollectionPortfolio implements Portfolio {
         stockList.add(new Stock(getDate(-3), "GILD", 8, 63.65, 1.4));
         stockList.add(new Stock(getDate(-48), "V", 2, 177.3, 0.7));
         stockList.add(new Stock(getDate(-21), "AXP", 3, 117.94, 0.2));
-       // recalculate();
-    }
-
-    public void recalculate() {
-        double sum = getSum();
-        stockList.forEach(stock ->
-                stock.setWeight(round(stock.getAmount() / sum * 100, 2)));
-    }
-
-    public double getSum() {
-        return stockList.stream().mapToDouble(Stock::getAmount).sum();
-    }
-
-    private static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = new BigDecimal(Double.toString(value));
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
+        // recalculate();
     }
 
     private Date getDate(int days) {

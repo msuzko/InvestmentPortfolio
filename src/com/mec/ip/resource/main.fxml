@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import org.controlsfx.control.textfield.*?>
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
+<?import org.controlsfx.control.textfield.CustomTextField?>
+<?import java.net.URL?>
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="488.0"
       prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.mec.ip.controllers.MainController">
@@ -25,7 +24,7 @@
                                         <Insets top="10.0"/>
                                     </VBox.margin>
                                 </Label>
-                                <Label minWidth="150.0" text="39 542 руб / 4,83%" textFill="#5bb506">
+                                <Label fx:id="commonPL" minWidth="150.0" text="39 542 руб / 4,83%" textFill="#5bb506">
                                     <VBox.margin>
                                         <Insets top="5.0"/>
                                     </VBox.margin>
@@ -40,27 +39,27 @@
                                 </ComboBox>
                             </children>
                         </VBox>
+<!--                        <VBox prefWidth="100.0" AnchorPane.rightAnchor="150.0">-->
+<!--                            <children>-->
+<!--                                <Label minWidth="130.0" text="%plDay">-->
+<!--                                    <font>-->
+<!--                                        <Font name="Times New Roman" size="12.0"/>-->
+<!--                                    </font>-->
+<!--                                    <VBox.margin>-->
+<!--                                        <Insets top="10.0"/>-->
+<!--                                    </VBox.margin>-->
+<!--                                </Label>-->
+<!--                                <Label minWidth="150.0" text="-3 000 248 руб / -0,13%" textFill="RED">-->
+<!--                                    <VBox.margin>-->
+<!--                                        <Insets top="5.0"/>-->
+<!--                                    </VBox.margin>-->
+<!--                                    <font>-->
+<!--                                        <Font name="Times New Roman Bold" size="14.0"/>-->
+<!--                                    </font>-->
+<!--                                </Label>-->
+<!--                            </children>-->
+<!--                        </VBox>-->
                         <VBox prefWidth="100.0" AnchorPane.rightAnchor="150.0">
-                            <children>
-                                <Label minWidth="130.0" text="%plDay">
-                                    <font>
-                                        <Font name="Times New Roman" size="12.0"/>
-                                    </font>
-                                    <VBox.margin>
-                                        <Insets top="10.0"/>
-                                    </VBox.margin>
-                                </Label>
-                                <Label minWidth="150.0" text="-3 000 248 руб / -0,13%" textFill="RED">
-                                    <VBox.margin>
-                                        <Insets top="5.0"/>
-                                    </VBox.margin>
-                                    <font>
-                                        <Font name="Times New Roman Bold" size="14.0"/>
-                                    </font>
-                                </Label>
-                            </children>
-                        </VBox>
-                        <VBox prefWidth="100.0" AnchorPane.rightAnchor="300.0">
                             <children>
                                 <Label minWidth="130.0" text="%marketPrice">
                                     <font>
@@ -84,24 +83,24 @@
                 </AnchorPane>
                 <VBox AnchorPane.leftAnchor="5.0">
                     <children>
-                        <HBox minWidth="300.0">
+                        <HBox minWidth="260.0">
                             <children>
                                 <Button fx:id="btnAdd" minWidth="75.0" mnemonicParsing="false"
                                         onAction="#actionButtonPressed" text="%add">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="10.0" right="5.0" top="10.0"/>
+                                        <Insets bottom="5.0" left="10.0" right="5.0" top="15.0"/>
                                     </HBox.margin>
                                 </Button>
                                 <Button fx:id="btnEdit" minWidth="75.0" mnemonicParsing="false"
                                         onAction="#actionButtonPressed" text="%edit">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="15.0"/>
                                     </HBox.margin>
                                 </Button>
                                 <Button fx:id="btnDelete" minWidth="75.0" mnemonicParsing="false"
                                         onAction="#actionButtonPressed" text="%delete">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="15.0"/>
                                     </HBox.margin>
                                 </Button>
                             </children>
@@ -109,16 +108,15 @@
                                 <Insets/>
                             </VBox.margin>
                         </HBox>
-                        <AnchorPane>
-                            <children>
-<!--                                <Button layoutX="219.0" layoutY="6.0" maxWidth="70.0" minWidth="65.0"-->
-<!--                                        mnemonicParsing="false" text="%search" AnchorPane.leftAnchor="240.0"-->
-<!--                                        AnchorPane.rightAnchor="0.0" onAction="#actionSearch"/>-->
-                                <CustomTextField fx:id="txtSearch" layoutX="-8.0" layoutY="3.0"
-                                                 AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="70.0"
-                                                 AnchorPane.topAnchor="5.0" promptText="%search"/>
-                            </children>
-                        </AnchorPane>
+
+                            <CustomTextField fx:id="txtSearch" layoutX="-8.0" layoutY="3.0"
+                                             AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0"
+                                             AnchorPane.topAnchor="10.0" promptText="%search">
+                                <VBox.margin>
+                                    <Insets bottom="5.0" left="10.0" right="5.0" top="7.0"/>
+                                </VBox.margin>
+                            </CustomTextField>
+
                     </children>
                 </VBox>
             </children>
@@ -132,10 +130,10 @@
                                      resizable="false" text="%date"/>
                         <TableColumn fx:id="columnTicker" maxWidth="-1.0" minWidth="45.0" prefWidth="-1.0"
                                      resizable="false" text="%ticker"/>
-                        <TableColumn fx:id="columnName" prefWidth="75.0" text="%name"/>
+                        <TableColumn fx:id="columnTitle" prefWidth="75.0" text="%name"/>
                         <TableColumn fx:id="columnCount" prefWidth="52.0" text="%count"/>
-                        <TableColumn fx:id="columnCost" prefWidth="87.0" text="%price"/>
-                        <TableColumn fx:id="columnCurrentCost" prefWidth="70.0" text="%currentPrice"/>
+                        <TableColumn fx:id="columnPrice" prefWidth="87.0" text="%price"/>
+                        <TableColumn fx:id="columnCurrentPrice" prefWidth="70.0" text="%currentPrice"/>
                         <TableColumn fx:id="columnAmount" prefWidth="69.0" text="%amount"/>
                         <TableColumn fx:id="columnWeight" prefWidth="91.0" text="%weight"/>
                         <TableColumn fx:id="columnPL" prefWidth="76.0" text="%pl"/>
@@ -150,4 +148,8 @@
             </children>
         </AnchorPane>
     </children>
+    <stylesheets>
+        <URL value="@ip.css"/>
+    </stylesheets>
+
 </VBox>

@@ -24,7 +24,6 @@ public class Main extends Application implements Observer {
 
     private Stage primaryStage;
     private MainController mainController;
-    private FXMLLoader fxmlLoader;
 
     private VBox currentRoot;
 
@@ -59,7 +58,7 @@ public class Main extends Application implements Observer {
     }
 
     private VBox loadFXML(Locale locale) {
-        fxmlLoader = new FXMLLoader();
+        FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource(MAIN_FXML));
         fxmlLoader.setResources(ResourceBundle.getBundle(BUNDLES_FOLDER, locale));
 
@@ -74,5 +73,10 @@ public class Main extends Application implements Observer {
             e.printStackTrace();
         }
         return node;
+    }
+
+    @Override
+    public void stop() throws Exception {
+        System.exit(0);
     }
 }

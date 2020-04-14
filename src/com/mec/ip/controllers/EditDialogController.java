@@ -33,7 +33,7 @@ public class EditDialogController implements Initializable {
     @FXML
     private TextField txtCount;
     @FXML
-    private TextField txtCost;
+    private TextField txtPrice;
     private ResourceBundle bundle;
 
     private Stock stock;
@@ -55,7 +55,7 @@ public class EditDialogController implements Initializable {
         bundle = resources;
         txtTicker.textProperty().addListener((observable, oldValue, newValue) -> txtTicker.setText(newValue.toUpperCase()));
         txtCount.textProperty().addListener(this::listenCount);
-        txtCost.textProperty().addListener(this::listenPrice);
+        txtPrice.textProperty().addListener(this::listenPrice);
         txtDate.textProperty().addListener(this::listenDate);
     }
 
@@ -71,7 +71,10 @@ public class EditDialogController implements Initializable {
         txtTicker.setText(stock.getTicker());
         if (stock.getCount() != 0) {
             txtCount.setText(String.valueOf(stock.getCount()));
-            txtCost.setText(String.valueOf(stock.getCost()));
+            txtPrice.setText(String.valueOf(stock.getPrice()));
+        } else{
+            txtCount.setText("");
+            txtPrice.setText("");
         }
     }
 
@@ -93,7 +96,7 @@ public class EditDialogController implements Initializable {
         }
         stock.setTicker(txtTicker.getText().trim());
         stock.setCount(Integer.parseInt(txtCount.getText()));
-        stock.setCost(Double.parseDouble(txtCost.getText()));
+        stock.setPrice(Double.parseDouble(txtPrice.getText()));
         try {
             stock.setDate(formatter.parse(txtDate.getText()));
         } catch (ParseException e) {
@@ -130,12 +133,12 @@ public class EditDialogController implements Initializable {
             isValuesEmpty = true;
         }
 
-        double cost = 0;
+        double price = 0;
         try {
-            cost = Double.parseDouble(txtCost.getText().trim());
+            price = Double.parseDouble(txtPrice.getText().trim());
         } catch (NumberFormatException ignored) {
         }
-        if (cost == 0) {
+        if (price == 0) {
             message.append(bundle.getString("fill_price"));
             isValuesEmpty = true;
         }
@@ -185,7 +188,7 @@ public class EditDialogController implements Initializable {
 
     private void listenPrice(ObservableValue<? extends String> observable, String oldValue, String newValue) {
         if (!newValue.matches("\\d{0,7}([.]\\d{0,4})?")) {
-            txtCost.setText(oldValue);
+            txtPrice.setText(oldValue);
         }
     }
 
