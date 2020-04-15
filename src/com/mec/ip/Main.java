@@ -3,10 +3,8 @@ package com.mec.ip;
 import com.mec.ip.controllers.MainController;
 import com.mec.ip.objects.Lang;
 import com.mec.ip.utils.LocaleManager;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.Loader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -29,20 +27,18 @@ public class Main extends Application implements Observer {
 
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        createGUI(LocaleManager.RU_LOCALE);
-
+        createGUI();
     }
 
-    private void createGUI(Locale locale) {
-        currentRoot = loadFXML(locale);
+    private void createGUI() {
+        currentRoot = loadFXML(LocaleManager.RU_LOCALE);
         mainController.setMainStage(primaryStage);
         primaryStage.setScene(new Scene(currentRoot, 750, 400));
         primaryStage.setMinWidth(750);
         primaryStage.setMinHeight(300);
         primaryStage.show();
-
     }
 
 
@@ -76,7 +72,7 @@ public class Main extends Application implements Observer {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         System.exit(0);
     }
 }

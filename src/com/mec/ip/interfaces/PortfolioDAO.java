@@ -7,9 +7,9 @@ public interface PortfolioDAO {
 
     boolean add(Stock stock);
 
-    boolean update(Stock stock);
+    void update(Stock stock);
 
-    boolean delete(Stock stock);
+    void delete(Stock stock);
 
     ObservableList<Stock> getStockList();
 

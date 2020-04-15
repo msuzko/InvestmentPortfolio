@@ -6,6 +6,8 @@ import com.mec.ip.interfaces.impls.FinvizStrategy;
 import com.mec.ip.interfaces.impls.portfolio.HibernatePortfolio;
 import com.mec.ip.objects.Lang;
 import com.mec.ip.objects.Stock;
+import com.mec.ip.utils.tablecell.PaintGoalTableCell;
+import com.mec.ip.utils.tablecell.PaintTableCellRedOrGreen;
 import com.mec.ip.utils.DialogManager;
 import com.mec.ip.utils.LocaleManager;
 import com.mec.ip.utils.Math;
@@ -19,7 +21,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -40,7 +41,14 @@ public class MainController extends Observable implements Initializable {
     private Runnable updater = new UpdateData();
     private Strategy strategy = new FinvizStrategy(portfolio);
 
+    private Parent fxmlEdit;
+    private FXMLLoader fxmlLoader = new FXMLLoader();
+    private EditDialogController editDialogController;
+    private Stage editDialogStage;
+    private Stage mainStage;
+    private ResourceBundle bundle;
 
+    //region @FXML
     @FXML
     public CustomTextField txtSearch;
     @FXML
@@ -81,13 +89,7 @@ public class MainController extends Observable implements Initializable {
     public Label commonPL;
     @FXML
     public ComboBox<Lang> comboLocales;
-
-    private Parent fxmlEdit;
-    private FXMLLoader fxmlLoader = new FXMLLoader();
-    private EditDialogController editDialogController;
-    private Stage editDialogStage;
-    private Stage mainStage;
-    private ResourceBundle bundle;
+    //endregion
 
     public void setMainStage(Stage mainStage) {
         this.mainStage = mainStage;
@@ -97,11 +99,9 @@ public class MainController extends Observable implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         bundle = resources;
         tablePortfolio.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        initColumns();
         setupClearButtonField(txtSearch);
-        initListeners();
         fillData();
-        initLoaders();
+        initColumnsListenersLoaders();
         new Thread(new Indicators()).start();
     }
 
@@ -125,16 +125,21 @@ public class MainController extends Observable implements Initializable {
     }
 
     private void fillLangComboBox() {
-        Lang langRU = new Lang(0, RU_CODE, bundle.getString("ru"), LocaleManager.RU_LOCALE);
-        Lang langEN = new Lang(1, EN_CODE, bundle.getString("en"), LocaleManager.EN_LOCALE);
+        Lang langRU = new Lang(0, bundle.getString("ru"), LocaleManager.RU_LOCALE);
+        Lang langEN = new Lang(1, bundle.getString("en"), LocaleManager.EN_LOCALE);
 
         comboLocales.getItems().add(langRU);
         comboLocales.getItems().add(langEN);
 
-        if (LocaleManager.getCurrentLang() == null)
-            comboLocales.getSelectionModel().select(0);
-        else
-            comboLocales.getSelectionModel().select(LocaleManager.getCurrentLang().getIndex());
+        int langIndex = LocaleManager.getCurrentLang() == null ? 0 : LocaleManager.getCurrentLang().getIndex();
+        comboLocales.getSelectionModel().select(langIndex);
+    }
+
+
+    private void initColumnsListenersLoaders() {
+        initColumns();
+        initListeners();
+        initLoaders();
     }
 
     private void initColumns() {
@@ -150,47 +155,29 @@ public class MainController extends Observable implements Initializable {
         columnCurrentPrice.setCellValueFactory(new PropertyValueFactory<>("currentPrice"));
         columnPL.setCellValueFactory(new PropertyValueFactory<>("pl"));
         columnPercentPL.setCellValueFactory(new PropertyValueFactory<>("plPercent"));
-
-        columnPL.setCellFactory(param -> new PLTableCell());
-        columnPercentPL.setCellFactory(param -> new PLTableCell());
-
-        columnGoal.setCellFactory(param -> new GoalTableCell());
+        columnPL.setCellFactory(param -> new PaintTableCellRedOrGreen());
+        columnPercentPL.setCellFactory(param -> new PaintTableCellRedOrGreen());
+        columnGoal.setCellFactory(param -> new PaintGoalTableCell());
     }
 
-    private static class PLTableCell extends TableCell<Stock, Double> {
-        @Override
-        protected void updateItem(Double item, boolean empty) {
-            super.updateItem(item, empty);
-            if (!isEmpty()) {
-                Stock stock = ((Stock) this.getTableRow().getItem());
-                if (item != null && stock != null) {
-                    if (item <= 0)
-                        this.setTextFill(Color.RED);
-                    else
-                        this.setTextFill(Color.GREEN);
-                    this.setText(decimalFormat(item));
-                } else this.setText(null);
-            } else this.setText(null);
-        }
-    }
+    private void initListeners() {
 
-    private static class GoalTableCell extends TableCell<Stock, Double> {
+        tablePortfolio.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                editDialogController.setStock(tablePortfolio.getSelectionModel().getSelectedItem());
+                showDialog(bundle.getString("editPosition"));
+            }
+        });
 
-        @Override
-        protected void updateItem(Double item, boolean empty) {
-            super.updateItem(item, empty);
-            if (!isEmpty()) {
-                Stock stock = ((Stock) this.getTableRow().getItem());
-                if (item != null && stock != null) {
-                    if (item <= stock.getCurrentPrice())
-                        this.setTextFill(Color.RED);
-                    else
-                        this.setTextFill(Color.GREEN);
-                    this.setText(decimalFormat(item));
-                } else this.setText(null);
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> actionSearch());
 
-            } else this.setText(null);
-        }
+        comboLocales.setOnAction(event -> {
+            Lang selectedLang = comboLocales.getSelectionModel().getSelectedItem();
+            LocaleManager.setCurrentLang(selectedLang);
+
+            setChanged();
+            notifyObservers(selectedLang);
+        });
     }
 
     private void initLoaders() {
@@ -202,43 +189,6 @@ public class MainController extends Observable implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void initListeners() {
-
-        tablePortfolio.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-                editDialogController.setStock(tablePortfolio.getSelectionModel().getSelectedItem());
-                showDialog(bundle.getString("editPosition"));
-            }
-        });
-        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> actionSearch());
-
-
-        comboLocales.setOnAction(event -> {
-            Lang selectedLang = comboLocales.getSelectionModel().getSelectedItem();
-            LocaleManager.setCurrentLang(selectedLang);
-
-            setChanged();
-            notifyObservers(selectedLang);
-        });
-    }
-
-    private void updateCommonMarketPrice() {
-        marketPrice.setText(decimalFormat(portfolio.getCurrentSum()) + " $");
-        double pl = Math.round(portfolio.getCurrentSum() - portfolio.getPurchaseSum(), 2);
-        double percent = Math.round(portfolio.getCurrentSum() / portfolio.getPurchaseSum() * 100 - 100, 2);
-        commonPL.setText(decimalFormat(pl) + " $ / " + percent + "%");
-        if (pl < 0)
-            commonPL.setTextFill(Paint.valueOf("red"));
-        else
-            commonPL.setTextFill(Paint.valueOf("green"));
-
-    }
-
-    private static String decimalFormat(double value) {
-        DecimalFormat formatter = new DecimalFormat("###,###.##");
-        return formatter.format(value);
     }
 
     public void actionButtonPressed(ActionEvent actionEvent) {
@@ -303,6 +253,23 @@ public class MainController extends Observable implements Initializable {
         updateCommonMarketPrice();
     }
 
+    private void updateCommonMarketPrice() {
+        marketPrice.setText(decimalFormat(portfolio.getCurrentSum()) + " $");
+        double pl = Math.round(portfolio.getCurrentSum() - portfolio.getPurchaseSum(), 2);
+        double percent = Math.round(portfolio.getCurrentSum() / portfolio.getPurchaseSum() * 100 - 100, 2);
+        commonPL.setText(decimalFormat(pl) + " $ / " + percent + "%");
+        if (pl < 0)
+            commonPL.setTextFill(Paint.valueOf("red"));
+        else
+            commonPL.setTextFill(Paint.valueOf("green"));
+    }
+
+    private static String decimalFormat(double value) {
+        DecimalFormat formatter = new DecimalFormat("###,###.##");
+        return formatter.format(value);
+    }
+
+
     private void updateData(Stock stock) {
         new Thread(() -> {
             strategy.updateStock(stock);
@@ -313,7 +280,6 @@ public class MainController extends Observable implements Initializable {
 
     private class Indicators extends Observable implements Runnable {
 
-
         @Override
         public void run() {
             try {
@@ -321,8 +287,8 @@ public class MainController extends Observable implements Initializable {
             } catch (InterruptedException e) {
                 return;
             }
-            while (true) {
-                long start = System.currentTimeMillis();
+
+            while (!Thread.interrupted()) {
                 strategy.updateDataInList(new ArrayList<>(portfolio.find(txtSearch.getText())));
                 Platform.runLater(updater);
                 try {
@@ -330,10 +296,8 @@ public class MainController extends Observable implements Initializable {
                 } catch (InterruptedException e) {
                     break;
                 }
-                System.out.println("time: " + (System.currentTimeMillis() - start));
             }
         }
-
     }
 
     private class UpdateData implements Runnable {

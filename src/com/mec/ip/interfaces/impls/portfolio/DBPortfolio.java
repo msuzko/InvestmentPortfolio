@@ -2,6 +2,7 @@ package com.mec.ip.interfaces.impls.portfolio;
 
 import com.mec.ip.interfaces.PortfolioAbstract;
 import com.mec.ip.objects.Stock;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
@@ -24,25 +25,23 @@ public class DBPortfolio extends PortfolioAbstract {
                 stockList.add(stock);
                 return true;
             }
-        } catch (SQLException | IllegalAccessException | ClassNotFoundException | InstantiationException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return false;
     }
 
     @Override
-    public boolean update(Stock stock) {
+    public void update(Stock stock) {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement("update  stocks set date=?, ticker=?, title=?,count=?,purchase_price=?,price=?,pe=?,goal=? where _id = ?", Statement.RETURN_GENERATED_KEYS)
         ) {
             fillStatement(stock, statement);
             statement.setInt(9, stock.getId());
             int result = statement.executeUpdate();
-            return result > 0;
-        } catch (SQLException | IllegalAccessException | ClassNotFoundException | InstantiationException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return false;
     }
 
     private void fillStatement(Stock stock, PreparedStatement statement) throws SQLException {
@@ -57,18 +56,16 @@ public class DBPortfolio extends PortfolioAbstract {
     }
 
     @Override
-    public boolean delete(Stock stock) {
+    public void delete(Stock stock) {
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement()) {
             int result = statement.executeUpdate("delete from stocks where _id =" + stock.getId());
             if (result > 0) {
                 stockList.remove(stock);
-                return true;
             }
-        } catch (SQLException | IllegalAccessException | ClassNotFoundException | InstantiationException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return false;
     }
 
     @Override
@@ -77,11 +74,9 @@ public class DBPortfolio extends PortfolioAbstract {
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("select * from stocks")) {
 
-            stockList.clear();
-
             fillStockList(resultSet);
 
-        } catch (SQLException | IllegalAccessException | ClassNotFoundException | InstantiationException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         updateWeight();
@@ -97,15 +92,13 @@ public class DBPortfolio extends PortfolioAbstract {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement("select * from stocks where ticker like ? or title like ?")) {
 
-            stockList.clear();
-
             String searchText = "%" + text + "%";
             statement.setString(1, searchText);
             statement.setString(2, searchText);
             ResultSet resultSet = statement.executeQuery();
 
             fillStockList(resultSet);
-        } catch (SQLException | IllegalAccessException | ClassNotFoundException | InstantiationException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         updateWeight();
@@ -114,6 +107,7 @@ public class DBPortfolio extends PortfolioAbstract {
 
     private void fillStockList(ResultSet resultSet) throws SQLException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        ObservableList<Stock> list = FXCollections.observableArrayList();
 
         while (resultSet.next()) {
             Stock stock = new Stock();
@@ -130,17 +124,17 @@ public class DBPortfolio extends PortfolioAbstract {
             stock.setPE(resultSet.getDouble("pe"));
             stock.setGoal(resultSet.getDouble("goal"));
             stock.setId(resultSet.getInt("_id"));
-            stockList.add(stock);
+            list.add(stock);
         }
+        for (Stock stock : list)
+            if (!stockList.contains(stock))
+                stockList.add(stock);
+        stockList.removeIf(stock -> !list.contains(stock));
     }
 
-    private Connection getConnection() throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-        Driver driver = (Driver) Class.forName("org.sqlite.JDBC").newInstance();
-        Connection conn = null;
+    private Connection getConnection() throws SQLException {
         String url = "jdbc:sqlite:db/IP.db";
-        // create a connection to the database
-        conn = DriverManager.getConnection(url);
-        return conn;
+        return DriverManager.getConnection(url);
     }
 
 

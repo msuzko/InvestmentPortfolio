@@ -76,7 +76,7 @@ public class Stock {
     }
 
     @Basic
-    @Column(name = "title", nullable = true, length = -1)
+    @Column(name = "title", length = -1)
     public String getTitle() {
         return title.get();
     }
@@ -97,7 +97,7 @@ public class Stock {
     }
 
     @Basic
-    @Column(name = "purchase_price", nullable = false, precision = 0)
+    @Column(name = "purchase_price", nullable = false)
     public double getPurchasePrice() {
         return purchasePrice.get();
     }
@@ -108,7 +108,7 @@ public class Stock {
     }
 
     @Basic
-    @Column(name = "price", nullable = true, precision = 0)
+    @Column(name = "price")
     public double getCurrentPrice() {
         return currentPrice.get();
     }
@@ -122,12 +122,12 @@ public class Stock {
     private void calculatePL() {
         if (getCurrentPrice() != 0 && getPurchasePrice() != 0) {
             setPL(Math.round(getCount() * (getCurrentPrice() - getPurchasePrice()), 2));
-            setPlPercent(Math.round(getAmount() / getPurchaseAmount() * 100-100, 2));
+            setPlPercent(Math.round(getAmount() / getPurchaseAmount() * 100 - 100, 2));
         }
     }
 
     @Basic
-    @Column(name = "pe", nullable = true, precision = 0)
+    @Column(name = "pe")
     public double getPE() {
         return pe.get();
     }
@@ -137,7 +137,7 @@ public class Stock {
     }
 
     @Basic
-    @Column(name = "goal", nullable = true, precision = 0)
+    @Column(name = "goal")
     public double getGoal() {
         return goal.get();
     }
@@ -149,10 +149,6 @@ public class Stock {
     @Transient
     public double getAmount() {
         return amount.get();
-    }
-
-    public void setAmount(double amount) {
-        this.amount.set(amount);
     }
 
     @Transient

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface Strategy {
 
-    List<Stock> updateDataInList(List<Stock> stockList);
+    void updateDataInList(List<Stock> stockList);
 
     void updateStock(Stock stock);
 }

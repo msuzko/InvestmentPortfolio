@@ -24,15 +24,13 @@ public class FinvizStrategy implements Strategy {
     }
 
     @Override
-    public List<Stock> updateDataInList(List<Stock> stockList) {
+    public void updateDataInList(List<Stock> stockList) {
         List<Stock> list = new ArrayList<>();
         for (Stock stock : stockList) {
             Thread thread  = new Thread(new UpdateData(stock));
             thread.start();
-           // updateStock(stock);
             list.add(stock);
         }
-        return list;
     }
 
     @Override

@@ -10,8 +10,7 @@ import java.util.Date;
 
 public class CollectionPortfolio extends PortfolioAbstract {
 
-    private ObservableList<Stock> backupList = FXCollections.observableArrayList();;
-
+    private ObservableList<Stock> backupList = FXCollections.observableArrayList();
 
     public CollectionPortfolio() {
         fillTestData();
@@ -26,17 +25,15 @@ public class CollectionPortfolio extends PortfolioAbstract {
     }
 
     @Override
-    public boolean update(Stock stock) {
+    public void update(Stock stock) {
         updateWeight();
-        return true;
     }
 
     @Override
-    public boolean delete(Stock stock) {
+    public void delete(Stock stock) {
         stockList.remove(stock);
         backupList.remove(stock);
         updateWeight();
-        return true;
     }
 
     @Override

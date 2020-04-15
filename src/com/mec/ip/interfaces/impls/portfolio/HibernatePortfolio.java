@@ -41,24 +41,22 @@ public class HibernatePortfolio extends PortfolioAbstract {
     }
 
     @Override
-    public boolean update(Stock stock) {
+    public void update(Stock stock) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         session.saveOrUpdate(stock);
         session.flush();
         session.close();
-        return true;
     }
 
     @Override
-    public boolean delete(Stock stock) {
+    public void delete(Stock stock) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         session.delete(stock);
         session.flush();
         session.close();
         stockList.remove(stock);
-        return true;
     }
 
     @Override
