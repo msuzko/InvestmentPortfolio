@@ -2,15 +2,15 @@ package com.mec.ip.controllers;
 
 import com.mec.ip.interfaces.PortfolioDAO;
 import com.mec.ip.interfaces.Strategy;
-import com.mec.ip.interfaces.impls.FinvizStrategy;
+import com.mec.ip.interfaces.impls.strategy.FinvizStrategy;
 import com.mec.ip.interfaces.impls.portfolio.HibernatePortfolio;
 import com.mec.ip.objects.Lang;
 import com.mec.ip.objects.Stock;
-import com.mec.ip.utils.tablecell.PaintGoalTableCell;
-import com.mec.ip.utils.tablecell.PaintTableCellRedOrGreen;
 import com.mec.ip.utils.DialogManager;
 import com.mec.ip.utils.LocaleManager;
 import com.mec.ip.utils.Math;
+import com.mec.ip.utils.tablecell.PaintGoalTableCell;
+import com.mec.ip.utils.tablecell.PaintTableCellRedOrGreen;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
@@ -35,8 +35,6 @@ import java.util.*;
 
 public class MainController extends Observable implements Initializable {
 
-    private static final String RU_CODE = "ru";
-    private static final String EN_CODE = "en";
     private PortfolioDAO portfolio = new HibernatePortfolio();
     private Runnable updater = new UpdateData();
     private Strategy strategy = new FinvizStrategy(portfolio);
@@ -200,7 +198,7 @@ public class MainController extends Observable implements Initializable {
             case "btnAdd":
                 editDialogController.setStock(new Stock());
                 showDialog(bundle.getString("addPosition"));
-                if (!editDialogController.isCancel()) {
+                if (editDialogController.isSave()) {
                     portfolio.add(editDialogController.getStock());
                     updateData(editDialogController.getStock());
                 }

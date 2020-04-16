@@ -39,26 +39,6 @@
                                 </ComboBox>
                             </children>
                         </VBox>
-<!--                        <VBox prefWidth="100.0" AnchorPane.rightAnchor="150.0">-->
-<!--                            <children>-->
-<!--                                <Label minWidth="130.0" text="%plDay">-->
-<!--                                    <font>-->
-<!--                                        <Font name="Times New Roman" size="12.0"/>-->
-<!--                                    </font>-->
-<!--                                    <VBox.margin>-->
-<!--                                        <Insets top="10.0"/>-->
-<!--                                    </VBox.margin>-->
-<!--                                </Label>-->
-<!--                                <Label minWidth="150.0" text="-3 000 248 руб / -0,13%" textFill="RED">-->
-<!--                                    <VBox.margin>-->
-<!--                                        <Insets top="5.0"/>-->
-<!--                                    </VBox.margin>-->
-<!--                                    <font>-->
-<!--                                        <Font name="Times New Roman Bold" size="14.0"/>-->
-<!--                                    </font>-->
-<!--                                </Label>-->
-<!--                            </children>-->
-<!--                        </VBox>-->
                         <VBox prefWidth="100.0" AnchorPane.rightAnchor="150.0">
                             <children>
                                 <Label minWidth="130.0" text="%marketPrice">
@@ -110,6 +90,7 @@
                         </HBox>
 
                             <CustomTextField fx:id="txtSearch" layoutX="-8.0" layoutY="3.0"
+                                             styleClass="search-box"
                                              AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0"
                                              AnchorPane.topAnchor="10.0" promptText="%search">
                                 <VBox.margin>

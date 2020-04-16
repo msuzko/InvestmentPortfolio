@@ -1,4 +1,4 @@
-package com.mec.ip.interfaces.impls;
+package com.mec.ip.interfaces.impls.strategy;
 
 import com.mec.ip.interfaces.PortfolioDAO;
 import com.mec.ip.interfaces.Strategy;
@@ -25,11 +25,10 @@ public class FinvizStrategy implements Strategy {
 
     @Override
     public void updateDataInList(List<Stock> stockList) {
-        List<Stock> list = new ArrayList<>();
         for (Stock stock : stockList) {
-            Thread thread  = new Thread(new UpdateData(stock));
-            thread.start();
-            list.add(stock);
+//            Thread thread  = new Thread(new UpdateData(stock));
+//            thread.start();
+            updateStock(stock);
         }
     }
 

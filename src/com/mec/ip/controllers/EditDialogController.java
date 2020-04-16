@@ -8,16 +8,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class EditDialogController implements Initializable {
@@ -29,7 +29,7 @@ public class EditDialogController implements Initializable {
     @FXML
     private TextField txtTicker;
     @FXML
-    private TextField txtDate;
+    private DatePicker txtDate;
     @FXML
     private TextField txtCount;
     @FXML
@@ -38,16 +38,14 @@ public class EditDialogController implements Initializable {
 
     private Stock stock;
     private SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-    private static final String DATE_PATTERN = "(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[012])/((19|20)\\d\\d)";
-    private Pattern pattern;
-    private boolean isCancel;
+    private boolean isSave;
 
-    public boolean isCancel() {
-        return isCancel;
+
+    public boolean isSave() {
+        return isSave;
     }
 
     public EditDialogController() {
-        pattern = Pattern.compile(DATE_PATTERN);
     }
 
     @Override
@@ -56,7 +54,6 @@ public class EditDialogController implements Initializable {
         txtTicker.textProperty().addListener((observable, oldValue, newValue) -> txtTicker.setText(newValue.toUpperCase()));
         txtCount.textProperty().addListener(this::listenCount);
         txtPrice.textProperty().addListener(this::listenPrice);
-        txtDate.textProperty().addListener(this::listenDate);
     }
 
     public void setStock(Stock stock) {
@@ -65,21 +62,28 @@ public class EditDialogController implements Initializable {
         this.stock = stock;
         String date = stock.getDateStr();
         if (date.isEmpty())
-            txtDate.setText(formatter.format(new Date()));
-        else
-            txtDate.setText(date);
+            txtDate.setValue(LocalDate.now());
+        else {
+            try {
+                Calendar c = Calendar.getInstance();
+                c.setTime(formatter.parse(date));
+                txtDate.setValue(LocalDate.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
         txtTicker.setText(stock.getTicker());
         if (stock.getCount() != 0) {
             txtCount.setText(String.valueOf(stock.getCount()));
             txtPrice.setText(String.valueOf(stock.getPurchasePrice()));
-        } else{
+        } else {
             txtCount.setText("");
             txtPrice.setText("");
         }
     }
 
-    public void actionClose(ActionEvent actionEvent) {
-        isCancel = true;
+    public void actionCancel(ActionEvent actionEvent) {
+        isSave = false;
         close(actionEvent);
     }
 
@@ -90,33 +94,30 @@ public class EditDialogController implements Initializable {
     }
 
     public void actionSave(ActionEvent actionEvent) {
-        isCancel = false;
+        isSave = true;
         if (valuesEmpty()) {
             return;
         }
         stock.setTicker(txtTicker.getText().trim());
         stock.setCount(Integer.parseInt(txtCount.getText()));
         stock.setPurchasePrice(Double.parseDouble(txtPrice.getText()));
+
         try {
-            stock.setDate(formatter.parse(txtDate.getText()));
+            stock.setDate(formatter.parse(txtDate.getEditor().getText()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
         close(actionEvent);
     }
 
+
     private boolean valuesEmpty() {
         boolean isValuesEmpty = false;
         StringBuilder message = new StringBuilder();
-
-        String date = txtDate.getText().trim().replaceAll("\\.", "/");
-        if (date.isEmpty())
+        if (txtDate.getValue() == null) {
             message.append(bundle.getString("fill_date")).append("\n");
-        else if (isNotValidate(date)) {
-            message.append(bundle.getString("invalid_date")).append("\n");
             isValuesEmpty = true;
         }
-
 
         if (txtTicker.getText().trim().isEmpty()) {
             message.append(bundle.getString("fill_ticker")).append("\n");
@@ -149,41 +150,8 @@ public class EditDialogController implements Initializable {
         return isValuesEmpty;
     }
 
-    public boolean isNotValidate(final String date) {
-
-        Matcher matcher = pattern.matcher(date);
-        if (matcher.matches()) {
-            matcher.reset();
-            if (matcher.find()) {
-                String day = matcher.group(1);
-                String month = matcher.group(2);
-                int year = Integer.parseInt(matcher.group(3));
-                if (day.equals("31") &&
-                        (month.equals("4") || month.equals("6") ||
-                                month.equals("9") || month.equals("11") ||
-                                month.equals("04") || month.equals("06") ||
-                                month.equals("09"))) {
-                    return true;//only 1,3,5,7,8,10,12 has 31 days
-                } else if (month.equals("2") || month.equals("02")) {
-                    //leap year
-                    if (year % 4 == 0) {
-                        return day.equals("30") || day.equals("31");
-                    } else {
-                        return day.equals("29") || day.equals("30") || day.equals("31");
-                    }
-                } else return false;
-            } else return true;
-        } else return true;
-    }
-
     public Stock getStock() {
         return stock;
-    }
-
-    private void listenDate(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        if (!newValue.matches("\\d{0,2}([.]\\d{0,2}([.]\\d{0,4})?)?")) {
-            txtDate.setText(oldValue);
-        }
     }
 
     private void listenPrice(ObservableValue<? extends String> observable, String oldValue, String newValue) {

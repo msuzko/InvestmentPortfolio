@@ -16,13 +16,13 @@ import javax.persistence.criteria.Root;
 
 public class HibernatePortfolio extends PortfolioAbstract {
 
-    private static SessionFactory sessionFactory;
+    private SessionFactory sessionFactory;
 
     public HibernatePortfolio() {
         sessionFactory = getSessionFactory();
     }
 
-    public static SessionFactory getSessionFactory() {
+    public SessionFactory getSessionFactory() {
         Configuration configuration = new Configuration();
         configuration.configure();
         sessionFactory = configuration.buildSessionFactory();
@@ -86,7 +86,7 @@ public class HibernatePortfolio extends PortfolioAbstract {
         CriteriaQuery<Stock> criteria = builder.createQuery(Stock.class);
 
         Root<Stock> myStockRoot = criteria.from(Stock.class);
-        Predicate likeRestriction = builder.and(
+        Predicate likeRestriction = builder.or(
                 builder.like(myStockRoot.get("title"), searchText),
                 builder.like(myStockRoot.get("ticker"), searchText)
         );

@@ -1,13 +1,6 @@
 package test;
 
-import com.mec.ip.interfaces.impls.FinvizStrategy;
-import com.mec.ip.objects.Stock;
-import org.junit.Assert;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestFinvizStrategy {
 
