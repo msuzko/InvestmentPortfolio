@@ -1,24 +1,29 @@
 package test;
 
+import com.mec.ip.configs.IPConfig;
 import com.mec.ip.interfaces.impls.portfolio.CollectionPortfolio;
 import com.mec.ip.objects.Stock;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.Calendar;
 
 public class TestPortfolio {
 
     CollectionPortfolio portfolio;
-
+    ApplicationContext context;
     @Before
     public void init() {
+        context = new AnnotationConfigApplicationContext(IPConfig.class);
         portfolio = new CollectionPortfolio();
     }
 
     private Stock getNewStock() {
-        Stock stock = new Stock();
+
+        Stock stock = context.getBean("stock",Stock.class);
         stock.setDate(Calendar.getInstance().getTime());
         stock.setTicker("MU");
         stock.setCount(3);

@@ -25,11 +25,22 @@ public class FinvizStrategy implements Strategy {
 
     @Override
     public void updateDataInList(List<Stock> stockList) {
+        List<Thread> list = new ArrayList<>();
         for (Stock stock : stockList) {
-//            Thread thread  = new Thread(new UpdateData(stock));
-//            thread.start();
-            updateStock(stock);
+            Thread thread = new Thread(new UpdateData(stock));
+            thread.start();
+            list.add(thread);
+            //updateStock(stock);
         }
+        for (Thread thread : list) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        for (Stock stock : stockList)
+                portfolio.update(stock);
     }
 
     @Override
@@ -45,7 +56,7 @@ public class FinvizStrategy implements Strategy {
             String title = stock.getTitle();
             fillStock(stock, rows, doc);
             if (stock.getPE() != pe || stock.getGoal() != goal || !stock.getTitle().equals(title))
-                portfolio.update(stock);
+                stock.setChanged(true);
         } catch (HttpStatusException e) {
             if (e.getStatusCode() == 404)
                 System.out.println("Акция с тикером " + stock.getTicker() + " не найдена");

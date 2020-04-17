@@ -33,6 +33,7 @@ public class HibernatePortfolio extends PortfolioAbstract {
     public boolean add(Stock stock) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
+        stock.setChanged(false);
         session.save(stock);
         session.flush();
         session.close();
@@ -42,11 +43,14 @@ public class HibernatePortfolio extends PortfolioAbstract {
 
     @Override
     public void update(Stock stock) {
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
-        session.saveOrUpdate(stock);
-        session.flush();
-        session.close();
+        if (stock.isChanged()) {
+            Session session = sessionFactory.openSession();
+            session.beginTransaction();
+            stock.setChanged(false);
+            session.saveOrUpdate(stock);
+            session.flush();
+            session.close();
+        }
     }
 
     @Override

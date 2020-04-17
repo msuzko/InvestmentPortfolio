@@ -1,5 +1,6 @@
 package com.mec.ip.controllers;
 
+import com.mec.ip.configs.IPConfig;
 import com.mec.ip.interfaces.PortfolioDAO;
 import com.mec.ip.interfaces.Strategy;
 import com.mec.ip.interfaces.impls.strategy.FinvizStrategy;
@@ -26,6 +27,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -35,9 +38,9 @@ import java.util.*;
 
 public class MainController extends Observable implements Initializable {
 
-    private PortfolioDAO portfolio = new HibernatePortfolio();
+    private PortfolioDAO portfolio;
     private Runnable updater = new UpdateData();
-    private Strategy strategy = new FinvizStrategy(portfolio);
+    private Strategy strategy;
 
     private Parent fxmlEdit;
     private FXMLLoader fxmlLoader = new FXMLLoader();
@@ -45,6 +48,7 @@ public class MainController extends Observable implements Initializable {
     private Stage editDialogStage;
     private Stage mainStage;
     private ResourceBundle bundle;
+    private ApplicationContext context;
 
     //region @FXML
     @FXML
@@ -95,6 +99,13 @@ public class MainController extends Observable implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        context = new AnnotationConfigApplicationContext(IPConfig.class);
+
+        portfolio = context.getBean("hibernatePortfolio", PortfolioDAO.class);
+        portfolio.setContext(context);
+
+        strategy = context.getBean("finvizStrategy", Strategy.class);
+
         bundle = resources;
         tablePortfolio.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         setupClearButtonField(txtSearch);
@@ -123,8 +134,12 @@ public class MainController extends Observable implements Initializable {
     }
 
     private void fillLangComboBox() {
-        Lang langRU = new Lang(0, bundle.getString("ru"), LocaleManager.RU_LOCALE);
-        Lang langEN = new Lang(1, bundle.getString("en"), LocaleManager.EN_LOCALE);
+
+        Lang langRU = context.getBean("langRU",Lang.class);
+        langRU.setName(bundle.getString("ru"));
+
+        Lang langEN = context.getBean("langEN",Lang.class);
+        langEN.setName(bundle.getString("en"));
 
         comboLocales.getItems().add(langRU);
         comboLocales.getItems().add(langEN);
@@ -153,9 +168,9 @@ public class MainController extends Observable implements Initializable {
         columnCurrentPrice.setCellValueFactory(new PropertyValueFactory<>("currentPrice"));
         columnPL.setCellValueFactory(new PropertyValueFactory<>("pl"));
         columnPercentPL.setCellValueFactory(new PropertyValueFactory<>("plPercent"));
-        columnPL.setCellFactory(param -> new PaintTableCellRedOrGreen());
-        columnPercentPL.setCellFactory(param -> new PaintTableCellRedOrGreen());
-        columnGoal.setCellFactory(param -> new PaintGoalTableCell());
+        columnPL.setCellFactory(param -> context.getBean("paintTableCellRedOrGreen",PaintTableCellRedOrGreen.class));
+        columnPercentPL.setCellFactory(param -> context.getBean("paintTableCellRedOrGreen",PaintTableCellRedOrGreen.class));
+        columnGoal.setCellFactory(param -> context.getBean("paintGoalTableCell",PaintGoalTableCell.class));
     }
 
     private void initListeners() {
@@ -196,7 +211,7 @@ public class MainController extends Observable implements Initializable {
         Button button = (Button) source;
         switch (button.getId()) {
             case "btnAdd":
-                editDialogController.setStock(new Stock());
+                editDialogController.setStock(context.getBean("stock",Stock.class));
                 showDialog(bundle.getString("addPosition"));
                 if (editDialogController.isSave()) {
                     portfolio.add(editDialogController.getStock());
@@ -271,6 +286,7 @@ public class MainController extends Observable implements Initializable {
     private void updateData(Stock stock) {
         new Thread(() -> {
             strategy.updateStock(stock);
+                portfolio.update(stock);
             Platform.runLater(updater);
         }).start();
 

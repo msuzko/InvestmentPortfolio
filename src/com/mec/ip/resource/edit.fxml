@@ -1,78 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.*?>
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
-
-<VBox maxHeight="-Infinity" minHeight="-Infinity" minWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mec.ip.controllers.EditDialogController">
-    <children>
-        <HBox minHeight="20.0" prefWidth="200.0">
-            <children>
-                <Label minWidth="120.0" text="%date">
-                    <HBox.margin>
-                        <Insets left="10.0" right="10.0" top="5.0" />
-                    </HBox.margin>
-                </Label>
-                <Label minWidth="92.0" text="%ticker">
-                    <HBox.margin>
-                        <Insets left="10.0" right="10.0" top="5.0" />
-                    </HBox.margin>
-                </Label>
-                <Label minWidth="93.0" text="%count">
-                    <HBox.margin>
-                        <Insets left="10.0" right="10.0" top="5.0" />
-                    </HBox.margin>
-                </Label>
-                <Label minWidth="93.0" text="%price">
-                    <HBox.margin>
-                        <Insets left="10.0" right="10.0" top="5.0" />
-                    </HBox.margin>
-                </Label>
-            </children>
-        </HBox>
-        <HBox prefWidth="200.0">
-            <children>
-            <DatePicker fx:id="txtDate" minWidth="120.0" promptText="%date">
-                <HBox.margin>
-                    <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                </HBox.margin>
-            </DatePicker>
-<!--                <TextField fx:id="txtDate" minWidth="92.0" promptText="%date">-->
-<!--                    <HBox.margin>-->
-<!--                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />-->
-<!--                    </HBox.margin>-->
-<!--                </TextField>-->
-                <TextField fx:id="txtTicker" minWidth="92.0" promptText="%ticker">
-                    <HBox.margin>
-                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                    </HBox.margin>
-                </TextField>
-                <TextField fx:id="txtCount" minWidth="93.0" promptText="%count">
-                    <HBox.margin>
-                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                    </HBox.margin>
-                </TextField>
-                <TextField fx:id="txtPrice" minWidth="93.0" promptText="%price">
-                    <HBox.margin>
-                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                    </HBox.margin>
-                </TextField>
-            </children>
-        </HBox>
-        <AnchorPane>
-            <children>
-                <Button fx:id="btnOk" defaultButton="true" layoutX="358.0" layoutY="5.0" minWidth="80.0" mnemonicParsing="false" onAction="#actionSave" prefHeight="27.0" text="%ok" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="5.0" />
-                <Button fx:id="btnCancel" cancelButton="true" layoutX="445.0" layoutY="14.0" minWidth="80.0" mnemonicParsing="false" onAction="#actionCancel" text="%cancel" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
-            </children>
-            <VBox.margin>
-                <Insets bottom="10.0" />
-            </VBox.margin>
-        </AnchorPane>
-    </children>
+<VBox maxHeight="-Infinity" minHeight="-Infinity" minWidth="450.0" xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mec.ip.controllers.EditDialogController">
     <stylesheets>
-        <URL value="@ip.css" />
+        <URL value="@ip.css"/>
     </stylesheets>
+    <HBox minHeight="20.0" prefWidth="200.0">
+        <Label minWidth="120.0" text="%date">
+            <HBox.margin>
+                <Insets left="10.0" right="10.0" top="5.0"/>
+            </HBox.margin>
+        </Label>
+        <Label minWidth="92.0" text="%ticker">
+            <HBox.margin>
+                <Insets left="10.0" right="10.0" top="5.0"/>
+            </HBox.margin>
+        </Label>
+        <Label minWidth="93.0" text="%count">
+            <HBox.margin>
+                <Insets left="10.0" right="10.0" top="5.0"/>
+            </HBox.margin>
+        </Label>
+        <Label minWidth="93.0" text="%price">
+            <HBox.margin>
+                <Insets left="10.0" right="10.0" top="5.0"/>
+            </HBox.margin>
+        </Label>
+    </HBox>
+    <HBox prefWidth="200.0">
+        <DatePicker fx:id="txtDate" minWidth="120.0" promptText="%date">
+            <HBox.margin>
+                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+            </HBox.margin>
+        </DatePicker>
+        <TextField fx:id="txtTicker" minWidth="92.0" promptText="%ticker">
+            <HBox.margin>
+                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+            </HBox.margin>
+        </TextField>
+        <TextField fx:id="txtCount" minWidth="93.0" promptText="%count">
+            <HBox.margin>
+                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+            </HBox.margin>
+        </TextField>
+        <TextField fx:id="txtPrice" minWidth="93.0" promptText="%price">
+            <HBox.margin>
+                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+            </HBox.margin>
+        </TextField>
+    </HBox>
+    <AnchorPane>
+        <VBox.margin>
+            <Insets bottom="10.0"/>
+        </VBox.margin>
+        <Button fx:id="btnOk" defaultButton="true" layoutX="358.0" layoutY="5.0" minWidth="80.0"
+                mnemonicParsing="false" onAction="#actionSave" prefHeight="27.0" text="%ok"
+                AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="5.0"/>
+        <Button fx:id="btnCancel" cancelButton="true" layoutX="445.0" layoutY="14.0" minWidth="80.0"
+                mnemonicParsing="false" onAction="#actionCancel" text="%cancel" AnchorPane.rightAnchor="10.0"
+                AnchorPane.topAnchor="5.0"/>
+    </AnchorPane>
 </VBox>

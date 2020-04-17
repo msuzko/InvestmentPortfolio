@@ -2,6 +2,7 @@ package com.mec.ip.interfaces;
 
 import com.mec.ip.objects.Stock;
 import javafx.collections.ObservableList;
+import org.springframework.context.ApplicationContext;
 
 public interface PortfolioDAO {
 
@@ -20,5 +21,7 @@ public interface PortfolioDAO {
     double getPurchaseSum();
 
     void updateWeight();
+
+    void setContext(ApplicationContext context);
 
 }

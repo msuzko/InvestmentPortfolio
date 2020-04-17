@@ -9,128 +9,111 @@
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="488.0"
       prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.mec.ip.controllers.MainController">
-    <children>
-        <AnchorPane maxHeight="80.0" prefHeight="80.0">
-            <children>
-                <AnchorPane AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
-                    <children>
-                        <VBox prefWidth="100.0" AnchorPane.rightAnchor="0.0">
-                            <children>
-                                <Label minWidth="130.0" text="%plCommon">
-                                    <font>
-                                        <Font name="Times New Roman" size="12.0"/>
-                                    </font>
-                                    <VBox.margin>
-                                        <Insets top="10.0"/>
-                                    </VBox.margin>
-                                </Label>
-                                <Label fx:id="commonPL" minWidth="150.0" text="39 542 руб / 4,83%" textFill="#5bb506">
-                                    <VBox.margin>
-                                        <Insets top="5.0"/>
-                                    </VBox.margin>
-                                    <font>
-                                        <Font name="Times New Roman Bold" size="14.0"/>
-                                    </font>
-                                </Label>
-                                <ComboBox minWidth="150" fx:id="comboLocales">
-                                    <VBox.margin>
-                                        <Insets top="5.0"/>
-                                    </VBox.margin>
-                                </ComboBox>
-                            </children>
-                        </VBox>
-                        <VBox prefWidth="100.0" AnchorPane.rightAnchor="150.0">
-                            <children>
-                                <Label minWidth="130.0" text="%marketPrice">
-                                    <font>
-                                        <Font name="Times New Roman" size="12.0"/>
-                                    </font>
-                                    <VBox.margin>
-                                        <Insets top="10.0"/>
-                                    </VBox.margin>
-                                </Label>
-                                <Label fx:id="marketPrice" minWidth="120.0" text="1 000 000 руб">
-                                    <VBox.margin>
-                                        <Insets top="5.0"/>
-                                    </VBox.margin>
-                                    <font>
-                                        <Font name="Times New Roman Bold" size="14.0"/>
-                                    </font>
-                                </Label>
-                            </children>
-                        </VBox>
-                    </children>
-                </AnchorPane>
-                <VBox AnchorPane.leftAnchor="5.0">
-                    <children>
-                        <HBox minWidth="260.0">
-                            <children>
-                                <Button fx:id="btnAdd" minWidth="75.0" mnemonicParsing="false"
-                                        onAction="#actionButtonPressed" text="%add">
-                                    <HBox.margin>
-                                        <Insets bottom="5.0" left="10.0" right="5.0" top="15.0"/>
-                                    </HBox.margin>
-                                </Button>
-                                <Button fx:id="btnEdit" minWidth="75.0" mnemonicParsing="false"
-                                        onAction="#actionButtonPressed" text="%edit">
-                                    <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="5.0" top="15.0"/>
-                                    </HBox.margin>
-                                </Button>
-                                <Button fx:id="btnDelete" minWidth="75.0" mnemonicParsing="false"
-                                        onAction="#actionButtonPressed" text="%delete">
-                                    <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="5.0" top="15.0"/>
-                                    </HBox.margin>
-                                </Button>
-                            </children>
-                            <VBox.margin>
-                                <Insets/>
-                            </VBox.margin>
-                        </HBox>
-
-                            <CustomTextField fx:id="txtSearch" layoutX="-8.0" layoutY="3.0"
-                                             styleClass="search-box"
-                                             AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0"
-                                             AnchorPane.topAnchor="10.0" promptText="%search">
-                                <VBox.margin>
-                                    <Insets bottom="5.0" left="10.0" right="5.0" top="7.0"/>
-                                </VBox.margin>
-                            </CustomTextField>
-
-                    </children>
-                </VBox>
-            </children>
-        </AnchorPane>
-        <AnchorPane prefHeight="322.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
-            <children>
-                <TableView fx:id="tablePortfolio" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0"
-                           AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
-                    <columns>
-                        <TableColumn fx:id="columnDate" maxWidth="-1.0" minWidth="80.0" prefWidth="-1.0"
-                                     resizable="false" text="%date"/>
-                        <TableColumn fx:id="columnTicker" maxWidth="-1.0" minWidth="45.0" prefWidth="-1.0"
-                                     resizable="false" text="%ticker"/>
-                        <TableColumn fx:id="columnTitle" prefWidth="75.0" text="%name"/>
-                        <TableColumn fx:id="columnCount" prefWidth="52.0" text="%count"/>
-                        <TableColumn fx:id="columnPrice" prefWidth="87.0" text="%price"/>
-                        <TableColumn fx:id="columnCurrentPrice" prefWidth="70.0" text="%currentPrice"/>
-                        <TableColumn fx:id="columnAmount" prefWidth="69.0" text="%amount"/>
-                        <TableColumn fx:id="columnWeight" prefWidth="91.0" text="%weight"/>
-                        <TableColumn fx:id="columnPL" prefWidth="76.0" text="%pl"/>
-                        <TableColumn fx:id="columnPercentPL" prefWidth="59.0" text="%plPercent"/>
-                        <TableColumn fx:id="columnPE" prefWidth="43.0" text="%pe"/>
-                        <TableColumn fx:id="columnGoal" prefWidth="71.0" text="%goal"/>
-                    </columns>
-                    <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-                    </columnResizePolicy>
-                </TableView>
-            </children>
-        </AnchorPane>
-    </children>
     <stylesheets>
         <URL value="@ip.css"/>
     </stylesheets>
 
+    <AnchorPane maxHeight="80.0" prefHeight="80.0">
+        <AnchorPane AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+            <VBox prefWidth="100.0" AnchorPane.rightAnchor="0.0">
+                <Label minWidth="130.0" text="%plCommon">
+                    <font>
+                        <Font name="Times New Roman" size="12.0"/>
+                    </font>
+                    <VBox.margin>
+                        <Insets top="10.0"/>
+                    </VBox.margin>
+                </Label>
+                <Label fx:id="commonPL" minWidth="150.0"  textFill="#5bb506">
+                    <VBox.margin>
+                        <Insets top="5.0"/>
+                    </VBox.margin>
+                    <font>
+                        <Font name="Times New Roman Bold" size="14.0"/>
+                    </font>
+                </Label>
+                <ComboBox minWidth="150" fx:id="comboLocales">
+                    <VBox.margin>
+                        <Insets top="5.0"/>
+                    </VBox.margin>
+                </ComboBox>
+            </VBox>
+            <VBox prefWidth="100.0" AnchorPane.rightAnchor="150.0">
+                <Label minWidth="130.0" text="%marketPrice">
+                    <font>
+                        <Font name="Times New Roman" size="12.0"/>
+                    </font>
+                    <VBox.margin>
+                        <Insets top="10.0"/>
+                    </VBox.margin>
+                </Label>
+                <Label fx:id="marketPrice" minWidth="120.0" >
+                    <VBox.margin>
+                        <Insets top="5.0"/>
+                    </VBox.margin>
+                    <font>
+                        <Font name="Times New Roman Bold" size="14.0"/>
+                    </font>
+                </Label>
+            </VBox>
+        </AnchorPane>
+        <VBox AnchorPane.leftAnchor="5.0">
+            <HBox minWidth="260.0">
+                <VBox.margin>
+                    <Insets/>
+                </VBox.margin>
+                <Button fx:id="btnAdd" minWidth="75.0" mnemonicParsing="false"
+                        onAction="#actionButtonPressed" text="%add">
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="10.0" right="5.0" top="15.0"/>
+                    </HBox.margin>
+                </Button>
+                <Button fx:id="btnEdit" minWidth="75.0" mnemonicParsing="false"
+                        onAction="#actionButtonPressed" text="%edit">
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="15.0"/>
+                    </HBox.margin>
+                </Button>
+                <Button fx:id="btnDelete" minWidth="75.0" mnemonicParsing="false"
+                        onAction="#actionButtonPressed" text="%delete">
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="15.0"/>
+                    </HBox.margin>
+                </Button>
+            </HBox>
+
+            <CustomTextField fx:id="txtSearch" layoutX="-8.0" layoutY="3.0"
+                             AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0"
+                             AnchorPane.topAnchor="10.0" promptText="%search">
+                <VBox.margin>
+                    <Insets bottom="5.0" left="10.0" right="5.0" top="7.0"/>
+                </VBox.margin>
+            </CustomTextField>
+
+        </VBox>
+    </AnchorPane>
+    <AnchorPane prefHeight="322.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
+        <TableView fx:id="tablePortfolio" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0"
+                   AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+            <columns>
+                <TableColumn fx:id="columnDate" maxWidth="-1.0" minWidth="80.0" prefWidth="-1.0"
+                             resizable="false" text="%date"/>
+                <TableColumn fx:id="columnTicker" maxWidth="-1.0" minWidth="45.0" prefWidth="-1.0"
+                             resizable="false" text="%ticker"/>
+                <TableColumn fx:id="columnTitle" prefWidth="75.0" text="%name"/>
+                <TableColumn fx:id="columnCount" prefWidth="52.0" text="%count"/>
+                <TableColumn fx:id="columnPrice" prefWidth="87.0" text="%price"/>
+                <TableColumn fx:id="columnCurrentPrice" prefWidth="70.0" text="%currentPrice"/>
+                <TableColumn fx:id="columnAmount" prefWidth="69.0" text="%amount"/>
+                <TableColumn fx:id="columnWeight" prefWidth="91.0" text="%weight"/>
+                <TableColumn fx:id="columnPL" prefWidth="76.0" text="%pl"/>
+                <TableColumn fx:id="columnPercentPL" prefWidth="59.0" text="%plPercent"/>
+                <TableColumn fx:id="columnPE" prefWidth="43.0" text="%pe"/>
+                <TableColumn fx:id="columnGoal" prefWidth="71.0" text="%goal"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+    </AnchorPane>
 </VBox>

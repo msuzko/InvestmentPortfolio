@@ -4,6 +4,8 @@ import com.mec.ip.interfaces.PortfolioAbstract;
 import com.mec.ip.objects.Stock;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.springframework.context.ApplicationContext;
+import sun.awt.AppContext;
 
 import java.sql.*;
 import java.text.ParseException;
@@ -20,6 +22,7 @@ public class DBPortfolio extends PortfolioAbstract {
             fillStatement(stock, statement);
             int result = statement.executeUpdate();
             if (result > 0) {
+                stock.setChanged(false);
                 int id = statement.getGeneratedKeys().getInt(1);
                 stock.setId(id);
                 stockList.add(stock);
@@ -33,14 +36,17 @@ public class DBPortfolio extends PortfolioAbstract {
 
     @Override
     public void update(Stock stock) {
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement("update  stocks set date=?, ticker=?, title=?,count=?,purchase_price=?,price=?,pe=?,goal=? where _id = ?", Statement.RETURN_GENERATED_KEYS)
-        ) {
-            fillStatement(stock, statement);
-            statement.setInt(9, stock.getId());
-            int result = statement.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        if (stock.isChanged()) {
+            try (Connection connection = getConnection();
+                 PreparedStatement statement = connection.prepareStatement("update  stocks set date=?, ticker=?, title=?,count=?,purchase_price=?,price=?,pe=?,goal=? where _id = ?", Statement.RETURN_GENERATED_KEYS)
+            ) {
+                fillStatement(stock, statement);
+                statement.setInt(9, stock.getId());
+                statement.executeUpdate();
+                stock.setChanged(false);
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -110,7 +116,7 @@ public class DBPortfolio extends PortfolioAbstract {
         ObservableList<Stock> list = FXCollections.observableArrayList();
 
         while (resultSet.next()) {
-            Stock stock = new Stock();
+            Stock stock = context.getBean("stock",Stock.class);
             stock.setTitle(resultSet.getString("title"));
             stock.setTicker(resultSet.getString("ticker"));
             try {

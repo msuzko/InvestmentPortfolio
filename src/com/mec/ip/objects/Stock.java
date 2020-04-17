@@ -28,6 +28,7 @@ public class Stock {
 
     private final static SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
     private int id;
+    private boolean isChanged;
 
     public Stock() {
     }
@@ -164,6 +165,15 @@ public class Stock {
     @Transient
     public double getPurchaseAmount() {
         return count.get() * purchasePrice.get();
+    }
+
+    @Transient
+    public boolean isChanged() {
+        return isChanged;
+    }
+
+    public void setChanged(boolean changed) {
+        isChanged = changed;
     }
 
     public void setWeight(double weight) {
